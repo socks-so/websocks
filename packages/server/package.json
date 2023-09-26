@@ -8,9 +8,9 @@
   "author": "Liudvikas Zekas, Rahul Singh",
   "license": "MIT",
   "scripts": {
-    "build": "tsup src/index.ts src/server/index.ts src/client/index.ts --format cjs,esm --dts",
     "dev": "vitest",
     "lint": "tsc",
+    "build": "tsup src/index.ts src/server/index.ts src/client/index.ts --format cjs,esm --dts",
     "test": "vitest run",
     "release": "changesets publish"
   },
