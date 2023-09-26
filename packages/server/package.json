@@ -1,0 +1,29 @@
+{
+  "name": "@websocks/server",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "keywords": [],
+  "author": "Liudvikas Zekas, Rahul Singh",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup src/index.ts src/server/index.ts src/client/index.ts --format cjs,esm --dts",
+    "dev": "vitest",
+    "lint": "tsc",
+    "test": "vitest run",
+    "release": "changesets publish"
+  },
+  "peerDependencies": {
+    "zod": "^3.22.2"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.26.2",
+    "@types/node": "^20.5.7",
+    "tsup": "^7.2.0",
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.4",
+    "ws": "^8.14.1",
+    "zod": "^3.22.2"
+  }
+}
