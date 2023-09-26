@@ -7,7 +7,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo run test",
     "ci": "turbo run lint build test",
-    "pub": "turbo run build lint test && changeset version && changeset publish"
+    "pub": "turbo run build lint test && changeset publish"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
