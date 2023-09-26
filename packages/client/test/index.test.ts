@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import z from "zod";
 
-describe("server", () => {
+describe("client", () => {
   it("should work", () => {
     expect(true).toBe(true);
   });
