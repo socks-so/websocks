@@ -1,7 +1,6 @@
-import { describe, it, expect } from "vitest";
-import z from "zod";
+import { describe, expect, it } from "vitest";
 
-describe("server", () => {
+describe("server types", () => {
   it("should work", () => {
     expect(true).toBe(true);
   });

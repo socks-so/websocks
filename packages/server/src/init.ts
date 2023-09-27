@@ -4,12 +4,12 @@ type AnyHeader = any;
 type AnyContext = any;
 type AnyPayload = any;
 
-type CreateSocksFunction = <
+type InitSocksFunction = <
   THeader extends AnyHeader,
   TContext extends AnyContext,
 >(config: {
   header: z.Schema<THeader>;
-  context: z.Schema<TContext>;
+  context: (opts: { header: THeader }) => TContext;
 }) => {
   receiver: Receiver<THeader, TContext>;
   sender: any;
@@ -17,13 +17,18 @@ type CreateSocksFunction = <
 
 type Receiver<THeader, TContext> = {
   messages: (
-    messages: ReceiveMessageRecord<THeader>,
+    messages: ReceiveMessageRecord<THeader>
   ) => ReceiveMessageRecord<THeader>;
   message: ReceiveMessageFactory<THeader, TContext>;
   use: ReceiverFactory<THeader, TContext>;
 };
 
-type ReceiveMessage<THeader, TContext> = {};
+type ReceiveMessage<THeader, TContext> = {
+  /* @internal */
+  _payload: z.Schema;
+  _header: THeader;
+  _context: TContext;
+};
 
 type ReceiveMessageConstructWithPayload<THeader, TContext, TPayload> = {
   on: (
@@ -31,16 +36,16 @@ type ReceiveMessageConstructWithPayload<THeader, TContext, TPayload> = {
       input: TPayload;
       header: THeader;
       context: TContext;
-    }) => void,
+    }) => void
   ) => ReceiveMessage<THeader, TContext>;
 };
 
 type ReceiveMessageConstruct<THeader, TContext> = {
   on: (
-    handler: (opts: { header: THeader; context: TContext }) => void,
+    handler: (opts: { header: THeader; context: TContext }) => void
   ) => ReceiveMessage<THeader, TContext>;
   payload: <TPayload>(
-    schema: z.Schema<TPayload>,
+    schema: z.Schema<TPayload>
   ) => ReceiveMessageConstructWithPayload<THeader, TContext, TPayload>;
 };
 
@@ -55,7 +60,7 @@ type ReceiveMessageFactory<THeader, TContext> = () => ReceiveMessageConstruct<
 >;
 
 type ReceiverFactory<THeader, TContext> = <TNewContext>(
-  middleware: (opts: { header: THeader; context: TContext }) => TNewContext,
+  middleware: (opts: { header: THeader; context: TContext }) => TNewContext
 ) => Receiver<
   THeader,
   Prettify<
@@ -78,6 +83,6 @@ type ReplaceUndefined<T, N> = Extract<T, undefined> extends never
   ? T
   : N | Exclude<T, undefined>;
 
-export const init: CreateSocksFunction = ({ header, context }) => {
+export const init: InitSocksFunction = ({ header, context }) => {
   return {} as any;
 };
