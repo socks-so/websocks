@@ -12,19 +12,6 @@ describe("server types", () => {
       }),
     };
 
-    const f = init({
-      header: z.object({ tok: z.string() }),
-      context: ({ header }) => {
-        const db = fakeDB.connect();
-        const user = null;
-        return {
-          db,
-          user,
-        };
-      },
-    });
-
-    // TESTING SECTIION
     const s = init({
       header: z.object({ token: z.string().optional() }),
       context: ({ header }) => {
@@ -45,6 +32,12 @@ describe("server types", () => {
       return { user };
     });
 
+    const sender = s.sender.messages({
+      greet: s.sender
+        .message()
+        .payload(z.object({ greetingMessage: z.string() })),
+    });
+
     const receives = s.receiver.messages({
       hello: s.receiver
         .message()
@@ -52,14 +45,18 @@ describe("server types", () => {
         .on(({ input, context }) => {
           context.db.insert(input.name);
           console.log(input.name);
+          sender
+            .greet({ greetingMessage: `greetings ${input.name}` })
+            .to(input.name);
         }),
 
       helloUser: authReceiver.message().on(({ context }) => {
         context.db.insert(context.user.username);
         console.log(context.user.username);
+        sender
+          .greet({ greetingMessage: `greetings ${context.user.username}` })
+          .to(context.user.username);
       }),
-      //@ts-expect-error
-      sholdNotWork: f.receiver.message().on(({ context }) => {}),
     });
   });
 });

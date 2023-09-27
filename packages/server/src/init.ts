@@ -12,7 +12,7 @@ type InitSocksFunction = <
   context: (opts: { header: THeader }) => TContext;
 }) => {
   receiver: Receiver<THeader, TContext>;
-  sender: any;
+  sender: Sender;
 };
 
 type Receiver<THeader, TContext> = {
@@ -23,11 +23,39 @@ type Receiver<THeader, TContext> = {
   use: ReceiverFactory<THeader, TContext>;
 };
 
+type Sender = {
+  messages: <TSenderMessageRecord extends SenderMessageRecord>(
+    messages: TSenderMessageRecord
+  ) => DecorateSenderMessages<TSenderMessageRecord>;
+  message: SendeMesageFactory;
+};
+
 type ReceiveMessage<THeader, TContext> = {
   /* @internal */
   _payload: z.Schema;
   _header: THeader;
   _context: TContext;
+};
+
+type SenderMessage<TPayload> = {
+  /* @internal */
+  _payload: TPayload;
+  _senderMessage: true;
+};
+
+type inferSenderMessagePayload<T> = T extends SenderMessage<infer TPayload>
+  ? TPayload
+  : never;
+
+type DecoratedSenderMessage<TSenderMessasge extends SenderMessage<AnyPayload>> =
+  (payload: inferSenderMessagePayload<TSenderMessasge>) => {
+    to: (wid: string) => void;
+    toRoom: (rid: string) => void;
+    broadcast: () => void;
+  };
+
+type DecorateSenderMessages<T extends SenderMessageRecord> = {
+  [K in keyof T]: DecoratedSenderMessage<T[K]>;
 };
 
 type ReceiveMessageConstructWithPayload<THeader, TContext, TPayload> = {
@@ -49,15 +77,23 @@ type ReceiveMessageConstruct<THeader, TContext> = {
   ) => ReceiveMessageConstructWithPayload<THeader, TContext, TPayload>;
 };
 
+type SenderMessageConstruct = {
+  payload: <TPayload>(schema: z.Schema<TPayload>) => SenderMessage<TPayload>;
+};
+
 type ReceiveMessageRecord<THeader> = Record<
   string,
   ReceiveMessage<THeader, AnyContext>
 >;
 
+type SenderMessageRecord = Record<string, SenderMessage<AnyPayload>>;
+
 type ReceiveMessageFactory<THeader, TContext> = () => ReceiveMessageConstruct<
   THeader,
   TContext
 >;
+
+type SendeMesageFactory = () => SenderMessageConstruct;
 
 type ReceiverFactory<THeader, TContext> = <TNewContext>(
   middleware: (opts: { header: THeader; context: TContext }) => TNewContext
@@ -68,12 +104,6 @@ type ReceiverFactory<THeader, TContext> = <TNewContext>(
       ReplaceUndefined<TNewContext, TContext>
   >
 >;
-
-type Sender<THeader, TContext> = {
-  messages: any;
-  message: any;
-  use: any;
-};
 
 type Prettify<T> = {
   [K in keyof T]: T[K];

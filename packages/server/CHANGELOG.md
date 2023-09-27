@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.1.2
+
+### Patch Changes
+
+- Added experimental sender api
+
 ## 0.1.1
 
 ### Patch Changes
