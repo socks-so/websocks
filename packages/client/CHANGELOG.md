@@ -1,5 +1,11 @@
 # @websocks/client
 
+## 0.1.2
+
+### Patch Changes
+
+- cdd5d22: add experimental socks client api
+
 ## 0.1.1
 
 ### Patch Changes
