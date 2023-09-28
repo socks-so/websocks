@@ -3,6 +3,13 @@
   "compilerOptions": {
     "outDir": "dist",
     "noUncheckedIndexedAccess": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@websocks/client": ["packages/client/src"],
+      "@websocks/client/*": ["packages/client/src/*"],
+      "@websocks/server": ["packages/server/src"],
+      "@websocks/server/*": ["packages/server/src/*"]
+    }
   }
 }

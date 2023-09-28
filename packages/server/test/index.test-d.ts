@@ -1,5 +1,7 @@
 import { describe, it, expect, assertType } from "vitest";
-import { init } from "../src/index";
+
+import { SocksClient, inferSenderMessageRecord } from "@websocks/client";
+import { init } from "@websocks/server";
 import z from "zod";
 
 describe("server types", () => {
@@ -32,7 +34,7 @@ describe("server types", () => {
       return { user };
     });
 
-    const sender = s.sender.messages({
+    const sends = s.sender.messages({
       greet: s.sender
         .message()
         .payload(z.object({ greetingMessage: z.string() })),
@@ -48,7 +50,7 @@ describe("server types", () => {
         .on(({ input, context }) => {
           context.db.insert(input.name);
           console.log(input.name);
-          sender
+          sends
             .greet({ greetingMessage: `greetings ${input.name}` })
             .to(input.name);
         }),
@@ -56,7 +58,7 @@ describe("server types", () => {
       helloUser: authReceiver.message().on(({ context }) => {
         context.db.insert(context.user.username);
         console.log(context.user.username);
-        sender
+        sends
           .greet({ greetingMessage: `greetings ${context.user.username}` })
           .to(context.user.username);
       }),
@@ -66,9 +68,12 @@ describe("server types", () => {
           .message()
           .payload(z.object({ msg: z.string() }))
           .on(({ input, context }) => {
-            sender.deep.greet({ msg: input.msg }).to("test");
+            sends.deep.greet({ msg: input.msg }).to("test");
           }),
       },
     });
+
+    const socks = s.create({ receiver: receives, sender: sends });
+    type SocksType = typeof socks;
   });
 });

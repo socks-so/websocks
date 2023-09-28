@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-type AnyHeader = any;
-type AnyContext = any;
-type AnyPayload = any;
+export type AnyHeader = any;
+export type AnyContext = any;
+export type AnyPayload = any;
 
-type InitSocksFunction = <
+export type InitSocksFunction = <
   THeader extends AnyHeader,
   TContext extends AnyContext,
 >(config: {
@@ -13,48 +13,80 @@ type InitSocksFunction = <
 }) => {
   receiver: Receiver<THeader, TContext>;
   sender: Sender;
+  create: Create<THeader>;
 };
 
-type Receiver<THeader, TContext> = {
-  messages: (
-    messages: ReceiveMessageRecord<THeader>
-  ) => ReceiveMessageRecord<THeader>;
+export type inferSenderMessageRecord<T> = T extends DecorateSenderMessages<
+  infer SenderMessageRecord
+>
+  ? SenderMessageRecord
+  : never;
+
+export type Create<THeader> = <
+  TDecorateSenderMessages extends DecorateSenderMessages<SenderMessageRecord>,
+  TReceiverMessageRecord extends ReceiverMessageRecord<THeader>,
+>(socks: {
+  sender: TDecorateSenderMessages;
+  receiver: TReceiverMessageRecord;
+}) => SocksType<
+  THeader,
+  TReceiverMessageRecord,
+  inferSenderMessageRecord<TDecorateSenderMessages>
+>;
+
+export type SocksType<
+  THeader,
+  TReceiverMessageRecord extends ReceiverMessageRecord<THeader>,
+  TSenderMessageRecord extends SenderMessageRecord,
+> = {
+  receives: TReceiverMessageRecord;
+  sends: TSenderMessageRecord;
+};
+
+export type Receiver<THeader, TContext> = {
+  messages: <TReceiverMessageRecord extends ReceiverMessageRecord<THeader>>(
+    messages: TReceiverMessageRecord
+  ) => TReceiverMessageRecord;
   message: ReceiveMessageFactory<THeader, TContext>;
   use: ReceiverFactory<THeader, TContext>;
 };
 
-type Sender = {
+export type Sender = {
   messages: <TSenderMessageRecord extends SenderMessageRecord>(
     messages: TSenderMessageRecord
   ) => DecorateSenderMessages<TSenderMessageRecord>;
   message: SendeMesageFactory;
 };
 
-type ReceiveMessage<THeader, TContext> = {
+export type ReceiveMessage<THeader, TContext, TPayload> = {
   /* @internal */
-  _payload: z.Schema;
+  _payloadSchema: z.Schema;
+  _payload: TPayload;
   _header: THeader;
   _context: TContext;
 };
 
-type SenderMessage<TPayload> = {
+export type SenderMessage<TPayload> = {
   /* @internal */
   _payload: TPayload;
   _senderMessage: true;
 };
 
-type inferSenderMessagePayload<T> = T extends SenderMessage<infer TPayload>
+export type inferSenderMessagePayload<T> = T extends SenderMessage<
+  infer TPayload
+>
   ? TPayload
   : never;
 
-type DecoratedSenderMessage<TSenderMessage extends SenderMessage<AnyPayload>> =
-  (payload: inferSenderMessagePayload<TSenderMessage>) => {
-    to: (wid: string) => void;
-    toRoom: (rid: string) => void;
-    broadcast: () => void;
-  };
+export type DecoratedSenderMessage<
+  TSenderMessage extends SenderMessage<AnyPayload>,
+> = (payload: inferSenderMessagePayload<TSenderMessage>) => {
+  to: (wid: string) => void;
+  toRoom: (rid: string) => void;
+  broadcast: () => void;
+};
 
-type DecorateSenderMessages<T extends SenderMessageRecord> = {
+export type DecorateSenderMessages<T extends SenderMessageRecord> = {
   [K in keyof T]: T[K] extends SenderMessage<AnyPayload>
     ? DecoratedSenderMessage<T[K]>
     : T[K] extends SenderMessageRecord
@@ -62,45 +94,45 @@ type DecorateSenderMessages<T extends SenderMessageRecord> = {
     : never;
 };
 
-type ReceiveMessageConstructWithPayload<THeader, TContext, TPayload> = {
+export type ReceiveMessageConstructWithPayload<THeader, TContext, TPayload> = {
   on: (
     handler: (opts: {
       input: TPayload;
       header: THeader;
       context: TContext;
     }) => void
-  ) => ReceiveMessage<THeader, TContext>;
+  ) => ReceiveMessage<THeader, TContext, TPayload>;
 };
 
-type ReceiveMessageConstruct<THeader, TContext> = {
+export type ReceiveMessageConstruct<THeader, TContext> = {
   on: (
     handler: (opts: { header: THeader; context: TContext }) => void
-  ) => ReceiveMessage<THeader, TContext>;
+  ) => ReceiveMessage<THeader, TContext, never>;
   payload: <TPayload>(
     schema: z.Schema<TPayload>
   ) => ReceiveMessageConstructWithPayload<THeader, TContext, TPayload>;
 };
 
-type SenderMessageConstruct = {
+export type SenderMessageConstruct = {
   payload: <TPayload>(schema: z.Schema<TPayload>) => SenderMessage<TPayload>;
 };
 
-type ReceiveMessageRecord<THeader> = {
-  [key: string]: ReceiveMessageRecord<THeader> | ReceiveMessage<THeader, any>;
+export type ReceiverMessageRecord<THeader> = {
+  [key: string]:
+    | ReceiverMessageRecord<THeader>
+    | ReceiveMessage<THeader, AnyContext, AnyPayload>;
 };
 
-type SenderMessageRecord = {
+export type SenderMessageRecord = {
   [key: string]: SenderMessageRecord | SenderMessage<AnyPayload>;
 };
 
-type ReceiveMessageFactory<THeader, TContext> = () => ReceiveMessageConstruct<
-  THeader,
-  TContext
->;
+export type ReceiveMessageFactory<THeader, TContext> =
+  () => ReceiveMessageConstruct<THeader, TContext>;
 
-type SendeMesageFactory = () => SenderMessageConstruct;
+export type SendeMesageFactory = () => SenderMessageConstruct;
 
-type ReceiverFactory<THeader, TContext> = <TNewContext>(
+export type ReceiverFactory<THeader, TContext> = <TNewContext>(
   middleware: (opts: { header: THeader; context: TContext }) => TNewContext
 ) => Receiver<
   THeader,
@@ -110,11 +142,11 @@ type ReceiverFactory<THeader, TContext> = <TNewContext>(
   >
 >;
 
-type Prettify<T> = {
+export type Prettify<T> = {
   [K in keyof T]: T[K];
 } & {};
 
-type ReplaceUndefined<T, N> = Extract<T, undefined> extends never
+export type ReplaceUndefined<T, N> = Extract<T, undefined> extends never
   ? T
   : N | Exclude<T, undefined>;
 
