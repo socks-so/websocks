@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vitest",
-    "typecheck": "vitest run typecheck",
+    "typecheck": "vitest typecheck",
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "test": "vitest run",
     "release": "changesets publish"

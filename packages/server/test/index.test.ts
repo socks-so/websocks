@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-describe("server types", () => {
+describe("server", () => {
   it("should work", () => {
     expect(true).toBe(true);
   });
