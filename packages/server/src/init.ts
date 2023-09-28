@@ -16,22 +16,23 @@ export type InitSocksFunction = <
   create: Create<THeader>;
 };
 
-export type inferSenderMessageRecord<T> = T extends DecorateSenderMessages<
+export type inferSenderMessageRecord<T> = T extends DecorateSenderMessageRecord<
   infer SenderMessageRecord
 >
   ? SenderMessageRecord
   : never;
 
 export type Create<THeader> = <
-  TDecorateSenderMessages extends DecorateSenderMessages<SenderMessageRecord>,
+  TDecorateSenderMessageRecord extends
+    DecorateSenderMessageRecord<SenderMessageRecord>,
   TReceiverMessageRecord extends ReceiverMessageRecord<THeader>,
 >(socks: {
-  sender: TDecorateSenderMessages;
+  sender: TDecorateSenderMessageRecord;
   receiver: TReceiverMessageRecord;
 }) => SocksType<
   THeader,
   TReceiverMessageRecord,
-  inferSenderMessageRecord<TDecorateSenderMessages>
+  inferSenderMessageRecord<TDecorateSenderMessageRecord>
 >;
 
 export type SocksType<
@@ -54,7 +55,7 @@ export type Receiver<THeader, TContext> = {
 export type Sender = {
   messages: <TSenderMessageRecord extends SenderMessageRecord>(
     messages: TSenderMessageRecord
-  ) => DecorateSenderMessages<TSenderMessageRecord>;
+  ) => DecorateSenderMessageRecord<TSenderMessageRecord>;
   message: SendeMesageFactory;
 };
 
@@ -78,7 +79,7 @@ export type inferSenderMessagePayload<T> = T extends SenderMessage<
   ? TPayload
   : never;
 
-export type DecoratedSenderMessage<
+export type DecorateSenderMessage<
   TSenderMessage extends SenderMessage<AnyPayload>,
 > = (payload: inferSenderMessagePayload<TSenderMessage>) => {
   to: (wid: string) => void;
@@ -86,11 +87,11 @@ export type DecoratedSenderMessage<
   broadcast: () => void;
 };
 
-export type DecorateSenderMessages<T extends SenderMessageRecord> = {
+export type DecorateSenderMessageRecord<T extends SenderMessageRecord> = {
   [K in keyof T]: T[K] extends SenderMessage<AnyPayload>
-    ? DecoratedSenderMessage<T[K]>
+    ? DecorateSenderMessage<T[K]>
     : T[K] extends SenderMessageRecord
-    ? DecorateSenderMessages<T[K]>
+    ? DecorateSenderMessageRecord<T[K]>
     : never;
 };
 
