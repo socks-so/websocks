@@ -74,13 +74,13 @@ export type DecorateSenderMessageRecord<
     : never;
 };
 
-export type SocksClient<
-  TSocks extends SocksType<
-    AnyHeader,
-    ReceiverMessageRecord<AnyHeader>,
-    SenderMessageRecord
-  >,
-> = {
+export type AnySocksType = SocksType<
+  AnyHeader,
+  ReceiverMessageRecord<AnyHeader>,
+  SenderMessageRecord
+>;
+
+export type SocksClient<TSocks extends AnySocksType> = {
   send: DecorateReceiverMessageRecord<inferReceiverMessageRecord<TSocks>>;
   on: DecorateSenderMessageRecord<inferSenderMessageRecord<TSocks>>;
 };
