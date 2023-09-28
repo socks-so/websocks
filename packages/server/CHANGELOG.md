@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.1.3
+
+### Patch Changes
+
+- Added recursive message records for message namespaces
+
 ## 0.1.2
 
 ### Patch Changes

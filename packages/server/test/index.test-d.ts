@@ -36,6 +36,11 @@ describe("server types", () => {
       greet: s.sender
         .message()
         .payload(z.object({ greetingMessage: z.string() })),
+      deep: {
+        greet: s.sender
+          .message()
+          .payload(z.object({ greetingMessage: z.string() })),
+      },
     });
 
     const receives = s.receiver.messages({
@@ -57,6 +62,15 @@ describe("server types", () => {
           .greet({ greetingMessage: `greetings ${context.user.username}` })
           .to(context.user.username);
       }),
+
+      deep: {
+        greet: s.receiver
+          .message()
+          .payload(z.object({ msg: z.string() }))
+          .on(({ input, context }) => {
+            sender.deep.greet({ greetingMessage: input.msg }).to("test");
+          }),
+      },
     });
   });
 });

@@ -55,7 +55,11 @@ type DecoratedSenderMessage<TSenderMessasge extends SenderMessage<AnyPayload>> =
   };
 
 type DecorateSenderMessages<T extends SenderMessageRecord> = {
-  [K in keyof T]: DecoratedSenderMessage<T[K]>;
+  [K in keyof T]: T[K] extends SenderMessage<AnyPayload>
+    ? DecoratedSenderMessage<T[K]>
+    : T[K] extends SenderMessageRecord
+    ? DecorateSenderMessages<T[K]>
+    : never;
 };
 
 type ReceiveMessageConstructWithPayload<THeader, TContext, TPayload> = {
@@ -81,12 +85,13 @@ type SenderMessageConstruct = {
   payload: <TPayload>(schema: z.Schema<TPayload>) => SenderMessage<TPayload>;
 };
 
-type ReceiveMessageRecord<THeader> = Record<
-  string,
-  ReceiveMessage<THeader, AnyContext>
->;
+type ReceiveMessageRecord<THeader> = {
+  [key: string]: ReceiveMessageRecord<THeader> | ReceiveMessage<THeader, any>;
+};
 
-type SenderMessageRecord = Record<string, SenderMessage<AnyPayload>>;
+type SenderMessageRecord = {
+  [key: string]: SenderMessageRecord | SenderMessage<AnyPayload>;
+};
 
 type ReceiveMessageFactory<THeader, TContext> = () => ReceiveMessageConstruct<
   THeader,
