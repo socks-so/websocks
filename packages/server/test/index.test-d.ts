@@ -37,9 +37,7 @@ describe("server types", () => {
         .message()
         .payload(z.object({ greetingMessage: z.string() })),
       deep: {
-        greet: s.sender
-          .message()
-          .payload(z.object({ greetingMessage: z.string() })),
+        greet: s.sender.message().payload(z.object({ msg: z.string() })),
       },
     });
 
@@ -68,7 +66,7 @@ describe("server types", () => {
           .message()
           .payload(z.object({ msg: z.string() }))
           .on(({ input, context }) => {
-            sender.deep.greet({ greetingMessage: input.msg }).to("test");
+            sender.deep.greet({ msg: input.msg }).to("test");
           }),
       },
     });

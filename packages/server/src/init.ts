@@ -47,8 +47,8 @@ type inferSenderMessagePayload<T> = T extends SenderMessage<infer TPayload>
   ? TPayload
   : never;
 
-type DecoratedSenderMessage<TSenderMessasge extends SenderMessage<AnyPayload>> =
-  (payload: inferSenderMessagePayload<TSenderMessasge>) => {
+type DecoratedSenderMessage<TSenderMessage extends SenderMessage<AnyPayload>> =
+  (payload: inferSenderMessagePayload<TSenderMessage>) => {
     to: (wid: string) => void;
     toRoom: (rid: string) => void;
     broadcast: () => void;
