@@ -1,5 +1,12 @@
 # @websocks/client
 
+## 0.1.4
+
+### Patch Changes
+
+- 484801c: version bumper
+- fd63547: actually it's not a bug, it's a feature
+
 ## 0.1.3
 
 ### Patch Changes
