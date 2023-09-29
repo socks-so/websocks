@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.1.7
+
+### Patch Changes
+
+- removed unnessesary files in npm package
+
 ## 0.1.6
 
 ### Patch Changes

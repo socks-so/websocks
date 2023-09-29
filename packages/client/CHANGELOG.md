@@ -1,5 +1,11 @@
 # @websocks/client
 
+## 0.1.5
+
+### Patch Changes
+
+- removed unnessesary files in npm package
+
 ## 0.1.4
 
 ### Patch Changes
