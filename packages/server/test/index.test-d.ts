@@ -1,7 +1,6 @@
 import { describe, it, expect, assertType } from "vitest";
 
-import { SocksClient, inferSenderMessageRecord } from "@websocks/client";
-import { init } from "@websocks/server";
+import { init } from "@websocks/server/src/index";
 import z from "zod";
 
 describe("server types", () => {
@@ -47,12 +46,12 @@ describe("server types", () => {
       hello: s.receiver
         .message()
         .payload(z.object({ name: z.string() }))
-        .on(({ input, context }) => {
-          context.db.insert(input.name);
-          console.log(input.name);
+        .on(({ payload, context }) => {
+          context.db.insert(payload.name);
+          console.log(payload.name);
           sends
-            .greet({ greetingMessage: `greetings ${input.name}` })
-            .to(input.name);
+            .greet({ greetingMessage: `greetings ${payload.name}` })
+            .to(payload.name);
         }),
 
       helloUser: authReceiver.message().on(({ context }) => {
@@ -67,13 +66,16 @@ describe("server types", () => {
         greet: s.receiver
           .message()
           .payload(z.object({ msg: z.string() }))
-          .on(({ input, context }) => {
-            sends.deep.greet({ msg: input.msg }).to("test");
+          .on(({ payload, context }) => {
+            sends.deep.greet({ msg: payload.msg }).to("test");
           }),
       },
     });
 
-    const socks = s.create({ receiver: receives, sender: sends });
+    const socks = s.create({
+      receiverMessages: receives,
+      senderMessages: sends,
+    });
     type SocksType = typeof socks;
   });
 });
