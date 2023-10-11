@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.1.8
+
+### Patch Changes
+
+- cleaner and better api
+
 ## 0.1.7
 
 ### Patch Changes
