@@ -149,18 +149,17 @@ export type Prettify<T> = {
   [K in keyof T]: T[K];
 } & {};
 
+export type Merge<Object1, Object2> = Omit<Object1, keyof Object2> & Object2;
+
+/* unused because of typescript erros
 export type ReplaceUndefined<T, N> = Extract<T, undefined> extends never
   ? T
   : N | Exclude<T, undefined>;
 
-export type NewContext<
-  THeader,
-  TContext,
-  TMiddlewareFn extends AnyMiddlewareFn<THeader>
-> = Prettify<
-  Omit<TContext, keyof ReplaceUndefined<ReturnType<TMiddlewareFn>, TContext>> &
-    ReplaceUndefined<ReturnType<TMiddlewareFn>, TContext>
+export type NewContext<TContext, TNewContext> = Prettify<
+  TContext & TNewContext
 >;
+*/
 
 export type ReceiverMessageHandlerFn<THeader, TContext, TPayload> = (opts: {
   payload: TPayload;
@@ -208,7 +207,7 @@ const createReceiverFactory = <THeader, TContext>(
   ) =>
     createReceiverFactory<
       THeader,
-      NewContext<THeader, TContext, TMiddlewareFn>
+      Merge<TContext, ReturnType<TMiddlewareFn>> //removed advanced merging because typescript error
     >([...middlewares, middleware]),
 });
 
