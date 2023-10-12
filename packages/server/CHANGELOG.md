@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.1.9
+
+### Patch Changes
+
+- typescript fix: less type inference for better ts performance
+
 ## 0.1.8
 
 ### Patch Changes
