@@ -21,9 +21,9 @@ export type InferSchemaReceiverMessageRecord<T> =
   T extends ReceiverMessageRecord<infer THeader>
     ? {
         [K in keyof T]: T[K] extends ReceiverMessage<
-          infer THeader,
-          infer TContext,
-          infer TPayload
+          AnyHeader,
+          AnyContext,
+          AnyPayload
         >
           ? InferSchemaReceiverMessage<T[K]>
           : T[K] extends ReceiverMessageRecord<THeader>
@@ -36,9 +36,9 @@ export type InferReceiverMessageRecord<T> =
   T extends SchemaReceiverMessageRecord<infer THeader>
     ? {
         [K in keyof T]: T[K] extends SchemaReceiverMessage<
-          infer THeader,
-          infer TContext,
-          infer TPayload
+          AnyHeader,
+          AnyContext,
+          AnyPayload
         >
           ? InferReceiverMessage<T[K]>
           : T[K] extends SchemaReceiverMessageRecord<THeader>
@@ -73,10 +73,7 @@ export type InferSenderMessageRecord<T> = T extends SchemaSenderMessageRecord<
   infer THeader
 >
   ? {
-      [K in keyof T]: T[K] extends SchemaSenderMessage<
-        infer THeader,
-        infer TPayload
-      >
+      [K in keyof T]: T[K] extends SchemaSenderMessage<AnyHeader, AnyPayload>
         ? InferSenderMessage<T[K]>
         : T[K] extends SchemaSenderMessageRecord<THeader>
         ? InferSenderMessageRecord<T[K]>
@@ -114,6 +111,7 @@ export type AnySenderMessage<THeader> = SenderMessage<THeader, AnyPayload>;
 
 export type SchemaReceiverMessage<THeader, TContext, TPayload> = {
   _tag: "receiver";
+  _payload: TPayload;
 };
 
 export type AnySchemaReceiverMessage<THeader> = SchemaReceiverMessage<
@@ -199,6 +197,7 @@ const createReceiverFactory = <THeader, TContext>(
           middlewares,
           payloadSchema,
           handler,
+          _payload: {} as TPayload,
         } as SchemaReceiverMessage<THeader, TContext, TPayload>),
     }),
   }),
@@ -207,7 +206,7 @@ const createReceiverFactory = <THeader, TContext>(
   ) =>
     createReceiverFactory<
       THeader,
-      Merge<TContext, ReturnType<TMiddlewareFn>> //removed advanced merging because typescript error
+      Prettify<Merge<TContext, ReturnType<TMiddlewareFn>>> //removed advanced merging because typescript error
     >([...middlewares, middleware]),
 });
 
@@ -225,7 +224,14 @@ export const createSenderFactory = <THeader>() => ({
   }),
 });
 
-export const create = <THeader, T2>(a: T2) => {};
+export type SocksType<
+  THeader,
+  TReceiverMessages extends ReceiverMessageRecord<THeader>,
+  TSenderMessgages extends SenderMessageRecord<THeader>
+> = {
+  receiverMessages: TReceiverMessages;
+  senderMessages: TSenderMessgages;
+};
 
 export const init = <THeader, TContext>(
   config: TConfig<THeader, TContext>
@@ -240,10 +246,7 @@ export const init = <THeader, TContext>(
     senderMessages: TSenderMessages;
   }) => {
     return {
-      _schema: {} as {
-        receiverMessages: InferSchemaReceiverMessageRecord<TReceiverMessages>;
-        senderMessages: InferSchemaSenderMessageRecord<TSenderMessages>;
-      },
+      _schema: {} as SocksType<THeader, TReceiverMessages, TSenderMessages>,
     };
   },
 });

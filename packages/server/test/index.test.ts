@@ -1,7 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 
-import { init } from "@websocks/server/src/index";
-import { z } from "zod";
+import { init, SocksType } from "@websocks/server/src/index";
+import { Schema, z } from "zod";
+
+import { client } from "@websocks/client/src/index";
 
 describe("server", () => {
   it("should work", () => {
@@ -50,6 +52,8 @@ describe("server", () => {
       senderMessages,
     });
 
-    expect(true).toBe(true);
+    type schema = (typeof server)["_schema"];
+
+    const cli = client<schema>();
   });
 });
