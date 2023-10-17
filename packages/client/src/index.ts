@@ -9,6 +9,8 @@ import {
   SocksType,
 } from "@websocks/server";
 
+import mitt from "mitt";
+
 export type AnySocksType = SocksType<
   AnyHeader,
   ReceiverMessageRecord<AnyHeader>,
@@ -56,6 +58,8 @@ export type InferSenderMessageHeader<T> = T extends SenderMessage<
   ? THeader
   : never;
 
+export type AnySenderMessage = SenderMessage<AnyHeader, AnyPayload>;
+
 export type DecorateSenderMessage<
   TSenderMessage extends SenderMessage<AnyHeader, AnyPayload>
 > = (
@@ -79,7 +83,11 @@ export type DecorateSenderMessageRecord<TRecord> =
       }
     : never;
 
-export const client = <TSocks extends AnySocksType>() => ({
-  send: {} as DecorateReceiverMessageRecord<TSocks["receiverMessages"]>,
-  on: {} as DecorateSenderMessageRecord<TSocks["senderMessages"]>,
-});
+export const client = <TSocks extends AnySocksType>() => {
+  const emitter = mitt();
+
+  return {} as {
+    send: DecorateReceiverMessageRecord<TSocks["receiverMessages"]>;
+    on: DecorateSenderMessageRecord<TSocks["senderMessages"]>;
+  };
+};
