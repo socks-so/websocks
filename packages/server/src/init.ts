@@ -206,7 +206,7 @@ const createReceiverFactory = <THeader, TContext>(
   ) =>
     createReceiverFactory<
       THeader,
-      Prettify<Merge<TContext, ReturnType<TMiddlewareFn>>> //removed advanced merging because typescript error
+      Prettify<ReturnType<TMiddlewareFn>> //removed advanced merging because typescript error
     >([...middlewares, middleware]),
 });
 
