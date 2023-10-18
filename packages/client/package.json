@@ -8,10 +8,10 @@
   "author": "Liudvikas Zekas, Rahul Singh",
   "license": "MIT",
   "scripts": {
-    "dev": "vitest --browser.name=chrome --browser.headless=true",
+    "dev": "vitest --browser.name=firefox --browser.headless=true",
     "typecheck": "vitest typecheck",
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "test": "vitest run --browser.name=chrome --browser.headless=true",
+    "test": "vitest run --browser.name=firefox --browser.headless=true",
     "release": "changesets publish"
   },
   "peerDependencies": {
