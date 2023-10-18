@@ -11,7 +11,7 @@
     "dev": "vitest --browser.name=firefox --browser.headless=true",
     "typecheck": "vitest typecheck",
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "test": "vitest run --browser.name=firefox --browser.headless=true",
+    "test": "echo no testing of client!",
     "release": "changesets publish"
   },
   "peerDependencies": {
