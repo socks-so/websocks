@@ -83,9 +83,26 @@ export type DecorateSenderMessageRecord<TRecord> =
       }
     : never;
 
-export const client = <TSocks extends AnySocksType>() => {
+export const client = <TSocks extends AnySocksType>(url: string) => {
   const emitter = mitt();
-  const socket = new WebSocket("ws://localhost:8080");
+  const socket = new WebSocket(url);
+
+  socket.onopen = () => {
+    console.log("connected to websocket server");
+  };
+
+  socket.onmessage = (event) => {
+    const { type, payload } = JSON.parse(event.data);
+    emitter.emit(type, payload);
+  };
+
+  socket.onclose = () => {
+    console.log("disconnected from websocket server");
+  };
+
+  socket.onerror = (error) => {
+    console.error(error);
+  };
 
   return createRecursiveProxy(async (opts) => {
     const path = [...opts.path];
@@ -96,7 +113,8 @@ export const client = <TSocks extends AnySocksType>() => {
 
     if (method === "send") {
       const payload = input;
-      emitter.emit(pathString, payload);
+      console.log("sending", { type: pathString, payload });
+      socket.send(JSON.stringify({ type: pathString, payload }));
     }
 
     if (method === "on") {

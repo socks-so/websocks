@@ -13,7 +13,7 @@ describe("client", () => {
         .message()
         .payload(z.string())
         .on(() => {
-          console.log("test");
+          console.log("test2");
         }),
     });
 
@@ -28,17 +28,14 @@ describe("client", () => {
 
     type schema = (typeof server)["_schema"];
 
-    const cli = client<schema>();
+    const cli = client<schema>("ws://localhost:8080");
 
     cli.on.test((payload) => {
       console.log(payload);
-      console.log(payload);
     });
 
-    cli.on.test((payload) => {
-      console.log("YES");
-    });
-
-    cli.send.test("WXIXEER!");
+    setTimeout(() => {
+      cli.send.test("test");
+    }, 2000);
   });
 });
