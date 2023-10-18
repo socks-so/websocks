@@ -85,9 +85,51 @@ export type DecorateSenderMessageRecord<TRecord> =
 
 export const client = <TSocks extends AnySocksType>() => {
   const emitter = mitt();
+  const socket = new WebSocket("ws://localhost:8080");
 
-  return {} as {
+  return createRecursiveProxy(async (opts) => {
+    const path = [...opts.path];
+    const method = path.shift()! as "send" | "on";
+    const pathString = path.join(".");
+
+    const [input] = opts.args;
+
+    if (method === "send") {
+      const payload = input;
+      emitter.emit(pathString, payload);
+    }
+
+    if (method === "on") {
+      const handler = input as (payload: unknown) => void;
+      emitter.on(pathString, handler);
+    }
+  }, []) as {
     send: DecorateReceiverMessageRecord<TSocks["receiverMessages"]>;
     on: DecorateSenderMessageRecord<TSocks["senderMessages"]>;
   };
 };
+
+interface ProxyCallbackOptions {
+  path: string[];
+  args: unknown[];
+}
+
+type ProxyCallback = (opts: ProxyCallbackOptions) => unknown;
+
+function createRecursiveProxy(callback: ProxyCallback, path: string[]) {
+  const proxy: unknown = new Proxy(() => {}, {
+    get(_obj, key) {
+      if (typeof key !== "string") return undefined;
+
+      return createRecursiveProxy(callback, [...path, key]);
+    },
+    apply(_1, _2, args) {
+      return callback({
+        path,
+        args,
+      });
+    },
+  });
+
+  return proxy;
+}

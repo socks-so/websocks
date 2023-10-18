@@ -8,10 +8,10 @@
   "author": "Liudvikas Zekas, Rahul Singh",
   "license": "MIT",
   "scripts": {
-    "dev": "vitest",
+    "dev": "vitest --browser.name=chrome --browser.headless=true",
     "typecheck": "vitest typecheck",
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "test": "vitest run",
+    "test": "vitest run --browser.name=chrome --browser.headless=true",
     "release": "changesets publish"
   },
   "peerDependencies": {
@@ -20,9 +20,11 @@
   "devDependencies": {
     "@changesets/cli": "^2.26.2",
     "@types/node": "^20.5.7",
+    "@vitest/browser": "^0.34.6",
     "tsup": "^7.2.0",
     "typescript": "^5.2.2",
     "vitest": "^0.34.4",
+    "webdriverio": "^8.19.0",
     "zod": "^3.22.2"
   },
   "dependencies": {
