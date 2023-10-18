@@ -3,8 +3,6 @@ import { describe, it } from "vitest";
 import { init, SocksType } from "@websocks/server/src/index";
 import { Schema, z } from "zod";
 
-import { client } from "@websocks/client/src/index";
-
 describe("server", () => {
   it("should work", () => {
     const s = init({
@@ -53,7 +51,5 @@ describe("server", () => {
     });
 
     type schema = (typeof server)["_schema"];
-
-    const cli = client<schema>();
   });
 });
