@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { createRecursiveProxy } from "./proxy";
+import { NodeConfig, createNodeAdapter } from "./adapter/node";
+import { Adapter } from "./adapter";
 
 export type AnyHeader = any;
 export type AnyContext = any;
@@ -111,7 +114,6 @@ export type AnySenderMessage<THeader> = SenderMessage<THeader, AnyPayload>;
 
 export type SchemaReceiverMessage<THeader, TContext, TPayload> = {
   _tag: "receiver";
-  _payload: TPayload;
 };
 
 export type AnySchemaReceiverMessage<THeader> = SchemaReceiverMessage<
@@ -197,7 +199,6 @@ const createReceiverFactory = <THeader, TContext>(
           middlewares,
           payloadSchema,
           handler,
-          _payload: {} as TPayload,
         } as SchemaReceiverMessage<THeader, TContext, TPayload>),
     }),
   }),
@@ -210,11 +211,27 @@ const createReceiverFactory = <THeader, TContext>(
     >([...middlewares, middleware]),
 });
 
-export const createSenderFactory = <THeader>() => ({
+export const createSenderFactory = <THeader>(adapter: Adapter) => ({
   messages: <TMessages extends SchemaSenderMessageRecord<THeader>>(
     messages: TMessages
   ) => {
-    return messages as any as InferSenderMessageRecord<TMessages>;
+    return createRecursiveProxy((opts) => {
+      const path = [...opts.path];
+      const pathString = path.join(".");
+      const [payload] = opts.args;
+
+      return {
+        to: (wid: string) => {
+          adapter.to(wid, JSON.stringify({ type: pathString, payload }));
+        },
+        toRoom: (rid: string) => {
+          adapter.toRoom(rid, JSON.stringify({ type: pathString, payload }));
+        },
+        broadcast: () => {
+          adapter.broadcast(JSON.stringify({ type: pathString, payload }));
+        },
+      };
+    }, []) as any as InferSenderMessageRecord<TMessages>;
   },
   message: () => ({
     payload: <TPayload>(payloadSchema: z.Schema<TPayload>) =>
@@ -233,20 +250,21 @@ export type SocksType<
   senderMessages: TSenderMessgages;
 };
 
-export const init = <THeader, TContext>(
-  config: TConfig<THeader, TContext>
-) => ({
-  receiver: createReceiverFactory<THeader, TContext>([config.context]),
-  sender: createSenderFactory<THeader>(),
-  create: <
-    TReceiverMessages extends ReceiverMessageRecord<THeader>,
-    TSenderMessages extends SenderMessageRecord<THeader>
-  >(opts: {
-    receiverMessages: TReceiverMessages;
-    senderMessages: TSenderMessages;
-  }) => {
-    return {
-      _schema: {} as SocksType<THeader, TReceiverMessages, TSenderMessages>,
-    };
-  },
-});
+export const init = <THeader, TContext>(config: TConfig<THeader, TContext>) => {
+  const adapter = createNodeAdapter({}, { adapter: "node", port: 8080 });
+  return {
+    receiver: createReceiverFactory<THeader, TContext>([config.context]),
+    sender: createSenderFactory<THeader>(adapter),
+    create: <
+      TReceiverMessages extends ReceiverMessageRecord<THeader>,
+      TSenderMessages extends SenderMessageRecord<THeader>
+    >(opts: {
+      receiverMessages: TReceiverMessages;
+      senderMessages: TSenderMessages;
+    }) => {
+      return {
+        _schema: {} as SocksType<THeader, TReceiverMessages, TSenderMessages>,
+      };
+    },
+  };
+};

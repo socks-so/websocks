@@ -1,15 +1,35 @@
-import { WebSocketServer } from "ws";
+import { init } from "../src";
+import { z } from "zod";
 
-const wss = new WebSocketServer({ port: 8080 });
-
-wss.on("listening", () => {
-  console.log("Server started!");
+const s = init({
+  header: z.object({ lol: z.string() }),
+  context: () => {
+    console.log("first context middleware fn!");
+    return {
+      user: null,
+    };
+  },
 });
 
-wss.on("connection", (ws) => {
-  console.log("Client connected!");
-  ws.on("message", (data) => {
-    console.log(data.toString());
-    ws.send(JSON.stringify({ type: "test", payload: "payloadTest" }));
-  });
+const sender = s.sender.messages({
+  greet: s.sender.message().payload(z.object({ username: z.string() })),
+  deep: {
+    deeper: {
+      greet: s.sender.message().payload(z.object({})),
+    },
+  },
+});
+
+const receiver = s.receiver.messages({
+  greet: s.receiver
+    .message()
+    .payload(z.object({ username: z.string() }))
+    .on(({ payload, header, context }) => {
+      console.log("greet! " + payload.username);
+    }),
+});
+
+const server = s.create({
+  receiverMessages: receiver,
+  senderMessages: sender,
 });

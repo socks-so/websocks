@@ -1,7 +1,8 @@
 import { describe, it } from "vitest";
 
-import { init, SocksType } from "@websocks/server/src/index";
-import { Schema, z } from "zod";
+import { init } from "@websocks/server/src/index";
+import { z } from "zod";
+import { client } from "@websocks/client/src/index";
 
 describe("server", () => {
   it("should work", () => {
@@ -45,11 +46,11 @@ describe("server", () => {
       },
     });
 
+    senderMessages.greet({ username: "rahul" }).broadcast();
+
     const server = s.create({
       receiverMessages,
       senderMessages,
     });
-
-    type schema = (typeof server)["_schema"];
   });
 });

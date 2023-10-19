@@ -33,9 +33,5 @@ describe("client", () => {
     cli.on.test((payload) => {
       console.log(payload);
     });
-
-    setTimeout(() => {
-      cli.send.test("test");
-    }, 2000);
   });
 });

@@ -9,6 +9,8 @@ import {
   SocksType,
 } from "@websocks/server";
 
+import { createRecursiveProxy } from "./proxy";
+
 import mitt from "mitt";
 
 export type AnySocksType = SocksType<
@@ -108,7 +110,6 @@ export const client = <TSocks extends AnySocksType>(url: string) => {
     const path = [...opts.path];
     const method = path.shift()! as "send" | "on";
     const pathString = path.join(".");
-
     const [input] = opts.args;
 
     if (method === "send") {
@@ -126,28 +127,3 @@ export const client = <TSocks extends AnySocksType>(url: string) => {
     on: DecorateSenderMessageRecord<TSocks["senderMessages"]>;
   };
 };
-
-interface ProxyCallbackOptions {
-  path: string[];
-  args: unknown[];
-}
-
-type ProxyCallback = (opts: ProxyCallbackOptions) => unknown;
-
-function createRecursiveProxy(callback: ProxyCallback, path: string[]) {
-  const proxy: unknown = new Proxy(() => {}, {
-    get(_obj, key) {
-      if (typeof key !== "string") return undefined;
-
-      return createRecursiveProxy(callback, [...path, key]);
-    },
-    apply(_1, _2, args) {
-      return callback({
-        path,
-        args,
-      });
-    },
-  });
-
-  return proxy;
-}

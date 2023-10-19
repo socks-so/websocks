@@ -1,71 +1,71 @@
-import { Adapter } from "../adapter";
+import { Adapter, AdapterArgs, AdapterConfig } from "../adapter";
 import { WebSocketServer, WebSocket } from "ws";
+import { randomUUID } from "crypto";
 
-export class NodeAdapter implements Adapter {
-  private wss: WebSocketServer;
-  private clientsToWS: Map<string, WebSocket> = new Map();
-  private wsToClients: Map<WebSocket, string> = new Map();
-  private clientsToRooms: Map<string, Set<string>> = new Map();
-  private roomsToClients: Map<string, Set<string>> = new Map();
+export interface NodeConfig extends AdapterConfig {
+  adapter: "node";
+  port: number;
+}
 
-  constructor() {
-    this.wss = new WebSocketServer({ port: 8080 });
+export function createNodeAdapter(
+  args: AdapterArgs,
+  config: NodeConfig
+): Adapter {
+  const wss = new WebSocketServer({ ...config });
+  const clientToWid = new Map<WebSocket, string>();
+  const widToClient = new Map<string, WebSocket>();
 
-    this.wss.on("connection", (ws) => {
-      const wid = Math.random().toString();
-      this.clientsToWS.set(wid, ws);
-      this.wsToClients.set(ws, wid);
+  const rooms = new Map<string, Set<string>>();
+  const widInRooms = new Map<string, Set<string>>();
 
-      ws.on("close", () => {
-        this.clientsToWS.delete(wid);
-        this.wsToClients.delete(ws);
-      });
-    });
-  }
+  wss.on("connection", (ws: WebSocket) => {
+    const wid = randomUUID();
+    clientToWid.set(ws, wid);
+    widToClient.set(wid, ws);
+    widInRooms.set(wid, new Set());
 
-  to(wid: string, data: any) {
-    this.clientsToWS.get(wid)?.send(data);
-  }
+    args.open && args.open(wid);
 
-  toRoom(rid: string, data: any) {
-    this.roomsToClients.get(rid)?.forEach((wid) => {
-      this.to(wid, data);
-    });
-  }
+    ws.on(
+      "message",
+      (data) =>
+        args.message &&
+        args.message(clientToWid.get(ws)!, JSON.parse(data.toString()))
+    );
+  });
 
-  broadcast(data: any) {
-    this.clientsToWS.forEach((ws) => {
-      ws.send(data);
-    });
-  }
+  return {
+    to(wid, data) {
+      widToClient.get(wid)?.send(data);
+    },
 
-  message(handler: (wid: string, data: any) => void) {}
+    toRoom(rid, data) {
+      for (const wid of rooms.get(rid) || []) {
+        this.to(wid, data);
+      }
+    },
 
-  open(fn: (wid: string) => void) {}
+    broadcast(data) {
+      for (const ws of clientToWid.keys()) {
+        ws.send(data);
+      }
+    },
 
-  close(fn: (wid: string) => void) {}
+    join(wid, rid) {
+      if (!rooms.has(rid)) {
+        rooms.set(rid, new Set());
+      }
+      rooms.get(rid)?.add(wid);
 
-  drain(fn: () => void) {}
+      if (!widInRooms.has(wid)) {
+        widInRooms.set(wid, new Set());
+      }
+      widInRooms.get(wid)?.add(rid);
+    },
 
-  join(wid: string, rid: string) {
-    const rooms = this.clientsToRooms.get(wid) ?? new Set();
-    rooms.add(rid);
-    this.clientsToRooms.set(wid, rooms);
-
-    const clients = this.roomsToClients.get(rid) ?? new Set();
-    clients.add(wid);
-    this.roomsToClients.set(rid, clients);
-  }
-
-  leave(wid: string, rid: string) {
-    const rooms = this.clientsToRooms.get(wid);
-    if (rooms) {
-      rooms.delete(rid);
-    }
-
-    const clients = this.roomsToClients.get(rid);
-    if (clients) {
-      clients.delete(wid);
-    }
-  }
+    leave(wid, rid) {
+      rooms.get(rid)?.delete(wid);
+      widInRooms.get(wid)?.delete(rid);
+    },
+  };
 }
