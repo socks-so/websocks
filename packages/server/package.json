@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vitest",
     "typecheck": "vitest typecheck",
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "test": "vitest run",
     "release": "changesets publish"
   },

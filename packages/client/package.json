@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vitest --browser.name=firefox --browser.headless=true",
     "typecheck": "vitest typecheck",
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "test": "echo no testing of client!",
     "release": "changesets publish"
   },
