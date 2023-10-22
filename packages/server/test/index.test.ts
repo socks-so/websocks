@@ -2,22 +2,25 @@ import { describe, it } from "vitest";
 
 import { init } from "@websocks/server/src/index";
 import { z } from "zod";
-import { client } from "@websocks/client/src/index";
+import { createNodeAdapter } from "../src/adapter/node";
+import { WebSocketServer } from "ws";
 
 describe("server", () => {
   it("should work", () => {
-    const s = init({
-      header: z.object({ lol: z.string() }),
-      context: () => {
-        console.log("first context middleware fn!");
-        return {
-          user: null,
-        };
+    const s = init(
+      {
+        header: z.object({ lol: z.string() }),
+        context: () => {
+          console.log("first context middleware fn!");
+          return {
+            user: null,
+          };
+        },
       },
-    });
+      createNodeAdapter(new WebSocketServer({ port: 8080 }))
+    );
 
     const authReceiver = s.receiver.use((opts) => {
-      console.log("second auth middleware fn!");
       return {
         user: "rahul",
       };
@@ -35,7 +38,8 @@ describe("server", () => {
         .message()
         .payload(z.object({ username: z.string() }))
         .on(({ payload, header, context }) => {
-          console.log("greet! " + payload.username);
+          console.log("greet2! " + payload.username);
+          senderMessages.greet({ username: "WAUUZO!" }).broadcast();
         }),
       auth: {
         login: authReceiver.message().on(({ header, context }) => {

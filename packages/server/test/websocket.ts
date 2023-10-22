@@ -1,35 +1,53 @@
-import { init } from "../src";
+import { init } from "@websocks/server/src/index";
 import { z } from "zod";
+import { createNodeAdapter } from "../src/adapter/node";
+import { WebSocketServer } from "ws";
 
-const s = init({
-  header: z.object({ lol: z.string() }),
-  context: () => {
-    console.log("first context middleware fn!");
-    return {
-      user: null,
-    };
+function logger() {
+  console.log("MESSAGE RECEIVED AT" + Date.now().toString());
+}
+
+const s = init(
+  {
+    header: z.object({ lol: z.string() }),
+    context: logger,
   },
+  createNodeAdapter(new WebSocketServer({ port: 8080 }))
+);
+
+const authReceiver = s.receiver.use((opts) => {
+  console.log("second auth middleware fn!");
+  return {
+    user: "rahul",
+    time: Date.now(),
+  };
 });
 
-const sender = s.sender.messages({
+const senderMessages = s.sender.messages({
   greet: s.sender.message().payload(z.object({ username: z.string() })),
   deep: {
-    deeper: {
-      greet: s.sender.message().payload(z.object({})),
-    },
+    greeter: s.sender.message().payload(z.object({ username: z.string() })),
   },
 });
 
-const receiver = s.receiver.messages({
+const receiverMessages = s.receiver.messages({
   greet: s.receiver
     .message()
     .payload(z.object({ username: z.string() }))
     .on(({ payload, header, context }) => {
-      console.log("greet! " + payload.username);
+      senderMessages.greet({ username: "DAZN" }).broadcast();
     }),
+  auth: {
+    login: authReceiver.message().on(({ header, context }) => {
+      console.log(context.user);
+    }),
+    logout: authReceiver.message().on(({ header, context }) => {}),
+  },
 });
 
+senderMessages.greet({ username: "rahul" }).broadcast();
+
 const server = s.create({
-  receiverMessages: receiver,
-  senderMessages: sender,
+  receiverMessages,
+  senderMessages,
 });
