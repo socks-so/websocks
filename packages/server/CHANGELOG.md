@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.1.10
+
+### Patch Changes
+
+- first working prototype
+
 ## 0.1.9
 
 ### Patch Changes
