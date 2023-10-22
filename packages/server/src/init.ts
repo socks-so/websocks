@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createRecursiveProxy } from "./proxy";
 import { createNodeAdapter } from "./adapter/node";
-import { Adapter } from "./adapter";
+import { Adapter } from "./adapter/types";
 
 export type AnyHeader = any;
 export type AnyContext = any;

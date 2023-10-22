@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket, RawData } from "ws";
 import { randomUUID } from "crypto";
-import { Adapter } from ".";
+import { Adapter } from "./types";
 
 export function createNodeAdapter(wss: WebSocketServer) {
   const clientToWid = new Map<WebSocket, string>();
