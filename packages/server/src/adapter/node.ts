@@ -10,25 +10,25 @@ export function createNodeAdapter(wss: WebSocketServer) {
   const widInRooms = new Map<string, Set<string>>();
 
   return {
-    to(wid: string, data: unknown) {
+    to(wid, data) {
       const dataJson = JSON.stringify(data);
       widToClient.get(wid)?.send(dataJson);
     },
 
-    toRoom(rid: string, data: unknown) {
+    toRoom(rid, data) {
       for (const wid of rooms.get(rid) || []) {
         this.to(wid, data);
       }
     },
 
-    broadcast(data: unknown) {
+    broadcast(data) {
       for (const ws of clientToWid.keys()) {
         const dataJson = JSON.stringify(data);
         ws.send(dataJson);
       }
     },
 
-    join(wid: string, rid: string) {
+    join(wid, rid) {
       if (!rooms.has(rid)) {
         rooms.set(rid, new Set());
       }
@@ -40,7 +40,7 @@ export function createNodeAdapter(wss: WebSocketServer) {
       widInRooms.get(wid)?.add(rid);
     },
 
-    leave(wid: string, rid: string) {
+    leave(wid, rid) {
       rooms.get(rid)?.delete(wid);
       widInRooms.get(wid)?.delete(rid);
     },
@@ -53,38 +53,39 @@ export function createNodeAdapter(wss: WebSocketServer) {
         widInRooms.set(wid, new Set());
 
         ws.on("message", (data) => {
-          const parsedData = parseRawData(data);
-          const messageHandle = messageMap.get(parsedData.type);
+          try {
+            const parsedData = parseRawData(data);
+            const messageHandle = messageMap.get(parsedData.type);
 
-          if (!messageHandle) {
-            ws.send(
-              JSON.stringify({ type: "error", payload: "message not found" })
+            if (!messageHandle) {
+              return ws.send(
+                JSON.stringify({ type: "error", payload: "message not found" })
+              );
+            }
+
+            const payload = messageHandle.payloadSchema?.parse(
+              parsedData.payload
             );
-            return;
-          }
 
-          const payload = messageHandle.payloadSchema?.safeParse(
-            parsedData.payload
-          );
+            const header = {}; //TODO: implement header logic
 
-          if (!payload?.success) {
-            ws.send(
-              JSON.stringify({
-                type: "error",
-                payload: "payload validation failed",
-              })
+            const context = messageHandle.middlewares.reduce(
+              (acc, curr) => curr({ header, context: acc }),
+              {}
             );
-            return;
+
+            messageHandle.handler({
+              wid: clientToWid.get(ws)!,
+              payload,
+              header,
+              context,
+            });
+          } catch (err) {
+            if (err instanceof Error) {
+              console.log(err);
+              ws.send(JSON.stringify({ type: "error", payload: err.message }));
+            }
           }
-
-          const header = {}; //TODO: implement header parsing
-
-          const context = messageHandle.middlewares.reduce(
-            (acc, curr) => curr({ header, context: acc }),
-            {}
-          );
-
-          messageHandle.handler({ payload, header, context });
         });
       });
       return {

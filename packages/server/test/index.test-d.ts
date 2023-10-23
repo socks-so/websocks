@@ -1,7 +1,10 @@
-import { describe, it, expect, assertType } from "vitest";
+import { describe, it } from "vitest";
 
 import { init } from "@websocks/server/src/index";
+import { createNodeAdapter } from "@websocks/server/src/adapter/node";
+
 import z from "zod";
+import { WebSocketServer } from "ws";
 
 describe("server types", () => {
   it("no type errors", () => {
@@ -13,24 +16,27 @@ describe("server types", () => {
       }),
     };
 
-    const s = init({
-      header: z.object({ token: z.string().optional() }),
-      context: ({ header }) => {
-        const db = fakeDB.connect();
-        const user = null;
-        return {
-          db,
-          user,
-        };
+    const s = init(
+      {
+        header: z.object({ token: z.string().optional() }),
+        context: ({ header }) => {
+          const db = fakeDB.connect();
+          const user = null;
+          return {
+            db,
+            user,
+          };
+        },
       },
-    });
+      createNodeAdapter(new WebSocketServer({ port: 8080 }))
+    );
 
     const authReceiver = s.receiver.use((opts) => {
       if (!opts.header.token) {
         throw new Error("No token");
       }
       const user = opts.context.db.select(opts.header.token);
-      return { user };
+      return { ...opts.context, user };
     });
 
     const sends = s.sender.messages({

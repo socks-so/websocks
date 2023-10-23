@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createRecursiveProxy } from "./proxy";
-import { createNodeAdapter } from "./adapter/node";
 import { Adapter } from "./adapter/types";
 
 export type AnyHeader = any;
@@ -8,11 +7,15 @@ export type AnyContext = any;
 export type AnyPayload = any;
 
 export type TConfig<THeader, TContext> = {
-  header: z.Schema<THeader>;
-  context: (opts: { header: THeader }) => TContext;
+  header?: z.Schema<THeader>;
+  context?: ContextFn<THeader, TContext>;
 };
 
 export type AnyConfig = TConfig<AnyHeader, AnyContext>;
+
+export type ContextFn<THeader, TContext> = (opts: {
+  header: THeader;
+}) => TContext;
 
 export type SchemaReceiverMessageRecord<THeader> = {
   [key: string]:
@@ -163,6 +166,7 @@ export type NewContext<TContext, TNewContext> = Prettify<
 */
 
 export type ReceiverMessageHandlerFn<THeader, TContext, TPayload> = (opts: {
+  wid: string;
   payload: TPayload;
   header: THeader;
   context: TContext;
@@ -180,6 +184,15 @@ export type AnyReceiverMessage<THeader> = ReceiverMessage<
   AnyContext,
   AnyPayload
 >;
+
+export type SocksType<
+  THeader,
+  TReceiverMessages extends ReceiverMessageRecord<THeader>,
+  TSenderMessgages extends SenderMessageRecord<THeader>
+> = {
+  receiverMessages: TReceiverMessages;
+  senderMessages: TSenderMessgages;
+};
 
 const createReceiverFactory = <THeader, TContext>(
   middlewares: AnyMiddlewareFn<THeader>[]
@@ -247,42 +260,34 @@ export const createSenderFactory = <THeader, TAdapter extends Adapter>(
   }),
 });
 
-export type SocksType<
-  THeader,
-  TReceiverMessages extends ReceiverMessageRecord<THeader>,
-  TSenderMessgages extends SenderMessageRecord<THeader>
-> = {
-  receiverMessages: TReceiverMessages;
-  senderMessages: TSenderMessgages;
-};
-
 function createMessageMap(
   messages: ReceiverMessageRecord<AnyHeader>,
   messageMap = new Map<String, AnyReceiverMessage<AnyHeader>>(),
   prefix = ""
 ) {
   Object.entries(messages).forEach(([key, value]) => {
-    //if _tag is present, it is a receiver message
     if (value._tag !== "receiver") {
+      //if _tag is present, it is a receiver message
       const messageRecord = value as ReceiverMessageRecord<AnyHeader>;
-      const newPrefix = prefix + key + ".";
+      const newPrefix = `${prefix}${key}.`;
       createMessageMap(messageRecord, messageMap, newPrefix);
-    }
-    //else it is a receiver message record
-    else {
+    } else {
+      //else it is a receiver message record
       const message = value as AnyReceiverMessage<AnyHeader>;
-      messageMap.set(prefix + key, message);
+      messageMap.set(`${prefix}${key}`, message);
     }
   });
   return messageMap;
 }
 
-export const init = <THeader, TContext, TAdapter extends Adapter>(
+export function init<THeader, TContext, TAdapter extends Adapter>(
   config: TConfig<THeader, TContext>,
   adapter: TAdapter
-) => {
+) {
   return {
-    receiver: createReceiverFactory<THeader, TContext>([config.context]),
+    receiver: createReceiverFactory<THeader, TContext>(
+      config.context ? [config.context] : []
+    ),
     sender: createSenderFactory<THeader, TAdapter>(adapter),
     create: <
       TReceiverMessages extends ReceiverMessageRecord<THeader>,
@@ -295,10 +300,8 @@ export const init = <THeader, TContext, TAdapter extends Adapter>(
 
       return {
         _schema: {} as SocksType<THeader, TReceiverMessages, TSenderMessages>,
-        ...(adapter.create(messageMap, config) as ReturnType<
-          TAdapter["create"]
-        >),
+        ...(adapter.create(messageMap) as ReturnType<TAdapter["create"]>),
       };
     },
   };
-};
+}

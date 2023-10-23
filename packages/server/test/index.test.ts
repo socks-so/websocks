@@ -7,18 +7,7 @@ import { WebSocketServer } from "ws";
 
 describe("server", () => {
   it("should work", () => {
-    const s = init(
-      {
-        header: z.object({ lol: z.string() }),
-        context: () => {
-          console.log("first context middleware fn!");
-          return {
-            user: null,
-          };
-        },
-      },
-      createNodeAdapter(new WebSocketServer({ port: 8080 }))
-    );
+    const s = init({}, createNodeAdapter(new WebSocketServer({ port: 8080 })));
 
     const authReceiver = s.receiver.use((opts) => {
       return {
@@ -37,9 +26,9 @@ describe("server", () => {
       greet: s.receiver
         .message()
         .payload(z.object({ username: z.string() }))
-        .on(({ payload, header, context }) => {
+        .on(({ wid, payload, header, context }) => {
           console.log("greet2! " + payload.username);
-          senderMessages.greet({ username: "WAUUZO!" }).broadcast();
+          senderMessages.greet({ username: "WAUUZO!" }).to(wid);
         }),
       auth: {
         login: authReceiver.message().on(({ header, context }) => {

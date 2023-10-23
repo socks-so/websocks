@@ -37,6 +37,10 @@ const receiverMessages = s.receiver.messages({
     .on(({ payload, header, context }) => {
       senderMessages.greet({ username: "DAZN" }).broadcast();
     }),
+  greetAll: s.receiver.message().on(({ header, context }) => {
+    console.log("greetAll");
+    senderMessages.greet({ username: "WAUUZO!" }).broadcast();
+  }),
   auth: {
     login: authReceiver.message().on(({ header, context }) => {
       console.log(context.user);

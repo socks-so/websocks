@@ -15,11 +15,7 @@ export interface Adapter {
   join: (wid: string, rid: string) => void;
   leave: (wid: string, rid: string) => void;
 
-  create: <
-    TMessageMap extends Map<String, AnyReceiverMessage<AnyHeader>>,
-    TConf extends TConfig<any, any>
-  >(
-    messageMap: TMessageMap,
-    config: TConf
+  create: <TMessageMap extends Map<String, AnyReceiverMessage<AnyHeader>>>(
+    messageMap: TMessageMap
   ) => any;
 }
