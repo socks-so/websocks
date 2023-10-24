@@ -7,7 +7,7 @@ import {
   SenderMessage,
   SenderMessageRecord,
   SocksType,
-} from "@websocks/server";
+} from "@websocks/server/src/index";
 
 import { createRecursiveProxy } from "./proxy";
 
@@ -43,6 +43,9 @@ export type DecorateReceiverMessageRecord<TRecord> =
           : TRecord[K] extends ReceiverMessageRecord<AnyHeader>
           ? DecorateReceiverMessageRecord<TRecord[K]>
           : never;
+      } & {
+        open: () => void; //temporary for utility events
+        close: () => void;
       }
     : never;
 
