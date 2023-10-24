@@ -1,5 +1,11 @@
 # @websocks/client
 
+## 0.2.0
+
+### Minor Changes
+
+- first prototype of client for browser and node
+
 ## 0.1.5
 
 ### Patch Changes
