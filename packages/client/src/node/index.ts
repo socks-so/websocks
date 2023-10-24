@@ -7,7 +7,7 @@ import {
   SenderMessage,
   SenderMessageRecord,
   SocksType,
-} from "@websocks/server";
+} from "@websocks/server/src/index";
 
 import { createRecursiveProxy } from "../proxy";
 
@@ -29,7 +29,7 @@ export type InferReceiverMessagePayload<T> = T extends ReceiverMessage<
   : never;
 
 export type DecorateReceiverMessage<
-  T extends ReceiverMessage<AnyHeader, AnyContext, AnyHeader>,
+  T extends ReceiverMessage<AnyHeader, AnyContext, AnyHeader>
 > = (payload: InferReceiverMessagePayload<T>) => void;
 
 export type DecorateReceiverMessageRecord<TRecord> =
@@ -64,7 +64,7 @@ export type InferSenderMessageHeader<T> = T extends SenderMessage<
 export type AnySenderMessage = SenderMessage<AnyHeader, AnyPayload>;
 
 export type DecorateSenderMessage<
-  TSenderMessage extends SenderMessage<AnyHeader, AnyPayload>,
+  TSenderMessage extends SenderMessage<AnyHeader, AnyPayload>
 > = (
   handler: (args: {
     header: InferSenderMessageHeader<TSenderMessage>;
@@ -83,6 +83,9 @@ export type DecorateSenderMessageRecord<TRecord> =
           : TRecord[K] extends SenderMessageRecord<AnyHeader>
           ? DecorateSenderMessageRecord<TRecord[K]>
           : never;
+      } & {
+        open: (handler: () => void) => void; //temporary for utility events
+        close: (handler: () => void) => void;
       }
     : never;
 
@@ -92,15 +95,17 @@ export const client = <TSocks extends AnySocksType>(url: string) => {
 
   socket.onopen = () => {
     console.log("connected to websocket server");
+    emitter.emit("open");
   };
 
   socket.onmessage = (event) => {
-    const { type, payload } = JSON.parse(event.data.toString());
+    const { type, payload } = JSON.parse(JSON.parse(event.data.toString())); //WTF why should i parse this twice?!
     emitter.emit(type, payload);
   };
 
   socket.onclose = () => {
     console.log("disconnected from websocket server");
+    emitter.emit("close");
   };
 
   socket.onerror = (error) => {
