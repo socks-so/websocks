@@ -1,4 +1,4 @@
-import { AnyHeader, AnyReceiverMessage, TConfig } from "..";
+import { AnyHeader, AnyReceiverMessage, TConfig } from "../types";
 
 export interface AdapterArgs {
   message?: (wid: string, data: unknown) => void;
