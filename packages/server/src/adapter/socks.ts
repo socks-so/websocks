@@ -6,6 +6,11 @@ interface SocksAdapterConfig {
   token: string;
 }
 
+interface Event {
+  type: string;
+  payload: unknown;
+}
+
 export function createSocksAdapter(config: SocksAdapterConfig) {
   return {
     to(wid: string, data: unknown) {},
@@ -27,8 +32,8 @@ export function createSocksAdapter(config: SocksAdapterConfig) {
     },
 
     create(messageMap) {
-      const handler: Handler = async (event, context) => {
-        // ...
+      const handler: Handler<Event> = async (event, context) => {
+        const { type, payload } = event;
       };
 
       return { handler };

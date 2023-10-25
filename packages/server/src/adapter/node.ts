@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocket, RawData } from "ws";
 import { randomUUID } from "crypto";
 import { Adapter } from "./types";
+import { handleMessage } from "../message-handler";
 
 export function createNodeAdapter(wss: WebSocketServer) {
   const clientToWid = new Map<WebSocket, string>();
@@ -55,31 +56,15 @@ export function createNodeAdapter(wss: WebSocketServer) {
         ws.on("message", (data) => {
           try {
             const parsedData = parseRawData(data);
-            const messageHandle = messageMap.get(parsedData.type);
+            const message = messageMap.get(parsedData.type);
 
-            if (!messageHandle) {
+            if (!message) {
               return ws.send(
                 JSON.stringify({ type: "error", payload: "message not found" })
               );
             }
 
-            const payload = messageHandle.payloadSchema?.parse(
-              parsedData.payload
-            );
-
-            const header = {}; //TODO: implement header logic
-
-            const context = messageHandle.middlewares.reduce(
-              (acc, curr) => curr({ header, context: acc }),
-              {}
-            );
-
-            messageHandle.handler({
-              wid: clientToWid.get(ws)!,
-              payload,
-              header,
-              context,
-            });
+            handleMessage(message, parsedData, wid);
           } catch (err) {
             if (err instanceof Error) {
               console.log(err);
