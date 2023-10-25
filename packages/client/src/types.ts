@@ -7,7 +7,7 @@ import {
   SenderMessage,
   SenderMessageRecord,
   SocksType,
-} from "@websocks/server/src/index";
+} from "@websocks/server/src/types";
 
 import { createRecursiveProxy } from "./proxy";
 
