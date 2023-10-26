@@ -1,7 +1,9 @@
 import { WebSocketServer, WebSocket, RawData } from "ws";
 import { randomUUID } from "crypto";
-import { Adapter } from "./types";
 import { handleMessage } from "../message-handler";
+
+import { Adapter } from "./types";
+import { Message } from "../message";
 
 export function createNodeAdapter(wss: WebSocketServer) {
   const clientToWid = new Map<WebSocket, string>();
@@ -81,10 +83,5 @@ export function createNodeAdapter(wss: WebSocketServer) {
 }
 
 function parseRawData(data: RawData) {
-  return JSON.parse(data.toString()) as Data;
+  return JSON.parse(data.toString()) as Message;
 }
-
-type Data = {
-  type: string;
-  payload: unknown;
-};

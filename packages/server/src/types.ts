@@ -10,8 +10,6 @@ type JsonArray = Array<JsonPrimitive | JsonMap | JsonArray>;
 export type JsonSerializable = JsonPrimitive | JsonMap | JsonArray;
 
 import { z } from "zod";
-import { createRecursiveProxy } from "./proxy";
-import { Adapter } from "./adapter/types";
 
 export type AnyHeader = any;
 export type AnyContext = any;

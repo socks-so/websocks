@@ -1,8 +1,9 @@
+import { Message } from "./message";
 import { AnyReceiverMessage } from "./types";
 
 export function handleMessage(
   message: AnyReceiverMessage<any>,
-  data: { type: string; payload: unknown },
+  data: Message,
   wid: string
 ) {
   const payload = message.payloadSchema?.parse(data.payload);
