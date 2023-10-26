@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.2.1
+
+### Patch Changes
+
+- add socks adapter
+
 ## 0.2.0
 
 ### Minor Changes
