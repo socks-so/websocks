@@ -1,6 +1,6 @@
 {
   "name": "@websocks/server",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -31,5 +31,19 @@
   "dependencies": {
     "ws": "^8.14.2",
     "zod": "^3.22.4"
+  },
+  "exports": {
+    "./adapters/socks": {
+      "import": "./dist/adapter/socks/index.mjs",
+      "require": "./dist/adapter/socks/index.js"
+    },
+    "./adapters/node": {
+      "import": "./dist/adapter/node/index.mjs",
+      "require": "./dist/adapter/node/index.js"
+    },
+    "./adapters/bun": {
+      "import": "./dist/adapter/bun/index.mjs",
+      "require": "./dist/adapter/bun/index.js"
+    }
   }
 }

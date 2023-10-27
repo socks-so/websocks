@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.2.2
+
+### Patch Changes
+
+- export adapters in package.json
+
 ## 0.2.1
 
 ### Patch Changes
