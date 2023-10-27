@@ -7,11 +7,7 @@ import {
   SenderMessage,
   SenderMessageRecord,
   SocksType,
-} from "@websocks/server/src/types";
-
-import { createRecursiveProxy } from "./proxy";
-
-import mitt from "mitt";
+} from "@websocks/server/types";
 
 export type AnySocksType = SocksType<
   AnyHeader,
