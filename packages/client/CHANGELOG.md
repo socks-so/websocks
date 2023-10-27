@@ -1,5 +1,11 @@
 # @websocks/client
 
+## 0.2.2
+
+### Patch Changes
+
+- fix import error
+
 ## 0.2.1
 
 ### Patch Changes
