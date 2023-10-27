@@ -1,13 +1,16 @@
 import { describe, it } from "vitest";
 
-import { init } from "@websocks/server/src/index";
-import { z } from "zod";
+import { init } from "../src/index";
 import { createNodeAdapter } from "../src/adapter/node";
+
+import { z } from "zod";
 import { WebSocketServer } from "ws";
 
 describe("server", () => {
   it("should work", () => {
-    const s = init({}, createNodeAdapter(new WebSocketServer({ port: 8080 })));
+    const s = init({
+      adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
+    });
 
     const authReceiver = s.receiver.use((opts) => {
       return {

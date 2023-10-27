@@ -10,17 +10,21 @@ type JsonArray = Array<JsonPrimitive | JsonMap | JsonArray>;
 export type JsonSerializable = JsonPrimitive | JsonMap | JsonArray;
 
 import { z } from "zod";
+import { Adapter } from "./adapter/types";
 
 export type AnyHeader = any;
 export type AnyContext = any;
 export type AnyPayload = any;
 
-export type TConfig<THeader, TContext> = {
+export type AnyAdapter = Adapter;
+
+export type TConfig<THeader, TContext, TAdapter extends Adapter> = {
   header?: z.Schema<THeader>;
   context?: ContextFn<THeader, TContext>;
+  adapter: TAdapter;
 };
 
-export type AnyConfig = TConfig<AnyHeader, AnyContext>;
+export type AnyConfig = TConfig<AnyHeader, AnyContext, AnyAdapter>;
 
 export type ContextFn<THeader, TContext> = (opts: {
   header: THeader;

@@ -1,15 +1,16 @@
-import { init } from "@websocks/server/src/index";
-import { WebSocketServer } from "ws";
+import { init } from "../src/index";
 
-import { client } from "@websocks/client/src/node";
-
-import { z } from "zod";
+import { client } from "@websocks/client/src";
 import { createNodeAdapter } from "../src/adapter/node";
 
-const s = init(
-  { header: z.string(), context: () => "test" },
-  createNodeAdapter(new WebSocketServer({ port: 8080 }))
-);
+import { z } from "zod";
+import { WebSocketServer } from "ws";
+
+const s = init({
+  header: z.string(),
+  context: () => "test",
+  adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
+});
 
 const sender = s.sender.messages({
   test: s.sender.message().payload(z.string()),

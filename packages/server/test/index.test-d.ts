@@ -1,7 +1,8 @@
 import { describe, it } from "vitest";
 
-import { init } from "@websocks/server/src/index";
-import { createNodeAdapter } from "@websocks/server/src/adapter/node";
+import { init } from "../src/index";
+
+import { createNodeAdapter } from "../src/adapter/node";
 
 import z from "zod";
 import { WebSocketServer } from "ws";
@@ -16,20 +17,18 @@ describe("server types", () => {
       }),
     };
 
-    const s = init(
-      {
-        header: z.object({ token: z.string().optional() }),
-        context: ({ header }) => {
-          const db = fakeDB.connect();
-          const user = null;
-          return {
-            db,
-            user,
-          };
-        },
+    const s = init({
+      header: z.object({ token: z.string().optional() }),
+      context: ({ header }) => {
+        const db = fakeDB.connect();
+        const user = null;
+        return {
+          db,
+          user,
+        };
       },
-      createNodeAdapter(new WebSocketServer({ port: 8080 }))
-    );
+      adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
+    });
 
     const authReceiver = s.receiver.use((opts) => {
       if (!opts.header.token) {

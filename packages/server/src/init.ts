@@ -109,22 +109,21 @@ function createMessageMap(
 }
 
 export function init<THeader, TContext, TAdapter extends Adapter>(
-  config: TConfig<THeader, TContext>,
-  adapter: TAdapter
+  config: TConfig<THeader, TContext, TAdapter>
 ) {
   return {
     rooms: {
       join: (rid: string, wid: string) => {
-        adapter.join(wid, rid);
+        config.adapter.join(wid, rid);
       },
       leave: (rid: string, wid: string) => {
-        adapter.leave(wid, rid);
+        config.adapter.leave(wid, rid);
       },
     },
     receiver: createReceiverFactory<THeader, TContext>(
       config.context ? [config.context] : []
     ),
-    sender: createSenderFactory<THeader, TAdapter>(adapter),
+    sender: createSenderFactory<THeader, TAdapter>(config.adapter),
     create: <
       TReceiverMessages extends ReceiverMessageRecord<THeader>,
       TSenderMessages extends SenderMessageRecord<THeader>
@@ -136,7 +135,9 @@ export function init<THeader, TContext, TAdapter extends Adapter>(
 
       return {
         _schema: {} as SocksType<THeader, TReceiverMessages, TSenderMessages>,
-        ...(adapter.create(messageMap) as ReturnType<TAdapter["create"]>),
+        ...(config.adapter.create(messageMap) as ReturnType<
+          TAdapter["create"]
+        >),
       };
     },
   };
