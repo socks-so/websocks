@@ -8,8 +8,12 @@
     "dev": "nodemon --exec ts-node src/socks.ts"
   },
   "devDependencies": {
+    "@aws-sdk/s3-presigned-post": "^3.438.0",
     "commander": "^11.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0"
   }
 }
