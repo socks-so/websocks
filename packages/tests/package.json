@@ -6,7 +6,6 @@
   "license": "MIT",
   "scripts": {
     "dev": "vitest",
-    "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 
 import { init } from "../src/index";
-import { createNodeAdapter } from "../src/adapter/node";
+import { createNodeAdapter } from "../src/adapters/node";
 
 import { z } from "zod";
 import { WebSocketServer } from "ws";

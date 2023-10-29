@@ -9,6 +9,11 @@ import {
   SocksType,
 } from "@websocks/server/types";
 
+export type AnySocksType = SocksType<
+  ReceiverMessageRecord,
+  SenderMessageRecord
+>;
+
 export type InferReceiverMessagePayload<T> = T extends ReceiverMessage<
   AnyContext,
   infer TPayload

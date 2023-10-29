@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 
 import { init } from "../src/index";
 
-import { createNodeAdapter } from "../src/adapter/node";
+import { createNodeAdapter } from "../src/adapters/node";
 
 import z from "zod";
 import { WebSocketServer } from "ws";
@@ -18,8 +18,7 @@ describe("server types", () => {
     };
 
     const s = init({
-      header: z.object({ token: z.string().optional() }),
-      context: ({ header }) => {
+      context: () => {
         const db = fakeDB.connect();
         const user = null;
         return {
@@ -30,11 +29,9 @@ describe("server types", () => {
       adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
     });
 
+    //since there is no header this is snippet makes no sense
     const authReceiver = s.receiver.use((opts) => {
-      if (!opts.header.token) {
-        throw new Error("No token");
-      }
-      const user = opts.context.db.select(opts.header.token);
+      const user = opts.context.db.select("no header");
       return { ...opts.context, user };
     });
 
