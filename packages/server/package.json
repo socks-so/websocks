@@ -1,8 +1,6 @@
 {
   "name": "@websocks/server",
-  "version": "0.2.6",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "version": "0.2.7",
   "types": "dist/index.d.ts",
   "keywords": [],
   "author": "Liudvikas Zekas, Rahul Singh",
