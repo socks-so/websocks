@@ -1,0 +1,15 @@
+config:
+  target: "ws://localhost:8080"
+  phases:
+    - duration: 60
+      arrivalRate: 20
+
+scenarios:
+  - engine: "ws"
+    flow:
+      - send: '{"type": "test", "payload": "world"}'
+      - think: 1
+      - loop:
+          - send: '{"type": "test", "payload": "ping"}'
+          - think: 1
+        count: 100

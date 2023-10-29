@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
+    "artillery": "^2.0.0-38",
     "vitest": "^0.34.6",
     "ws": "^8.14.2",
     "zod": "^3.22.4"
