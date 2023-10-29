@@ -9,14 +9,7 @@ import {
   SocksType,
 } from "@websocks/server/types";
 
-export type AnySocksType = SocksType<
-  AnyHeader,
-  ReceiverMessageRecord<AnyHeader>,
-  SenderMessageRecord<AnyHeader>
->;
-
 export type InferReceiverMessagePayload<T> = T extends ReceiverMessage<
-  AnyHeader,
   AnyContext,
   infer TPayload
 >
@@ -24,58 +17,45 @@ export type InferReceiverMessagePayload<T> = T extends ReceiverMessage<
   : never;
 
 export type DecorateReceiverMessage<
-  T extends ReceiverMessage<AnyHeader, AnyContext, AnyHeader>
+  T extends ReceiverMessage<AnyContext, AnyHeader>
 > = (payload: InferReceiverMessagePayload<T>) => void;
 
 export type DecorateReceiverMessageRecord<TRecord> =
-  TRecord extends ReceiverMessageRecord<AnyHeader>
+  TRecord extends ReceiverMessageRecord
     ? {
         [K in keyof TRecord]: TRecord[K] extends ReceiverMessage<
-          AnyHeader,
           AnyContext,
           AnyHeader
         >
           ? DecorateReceiverMessage<TRecord[K]>
-          : TRecord[K] extends ReceiverMessageRecord<AnyHeader>
+          : TRecord[K] extends ReceiverMessageRecord
           ? DecorateReceiverMessageRecord<TRecord[K]>
           : never;
       }
     : never;
 
 export type InferSenderMessagePayload<T> = T extends SenderMessage<
-  AnyHeader,
   infer TPayload
 >
   ? TPayload
   : never;
 
-export type InferSenderMessageHeader<T> = T extends SenderMessage<
-  infer THeader,
-  AnyPayload
->
-  ? THeader
-  : never;
-
-export type AnySenderMessage = SenderMessage<AnyHeader, AnyPayload>;
+export type AnySenderMessage = SenderMessage<AnyPayload>;
 
 export type DecorateSenderMessage<
-  TSenderMessage extends SenderMessage<AnyHeader, AnyPayload>
+  TSenderMessage extends SenderMessage<AnyPayload>
 > = (
   handler: (args: {
-    header: InferSenderMessageHeader<TSenderMessage>;
     payload: InferSenderMessagePayload<TSenderMessage>;
   }) => void
 ) => void;
 
 export type DecorateSenderMessageRecord<TRecord> =
-  TRecord extends SenderMessageRecord<AnyHeader>
+  TRecord extends SenderMessageRecord
     ? {
-        [K in keyof TRecord]: TRecord[K] extends SenderMessage<
-          AnyHeader,
-          AnyPayload
-        >
+        [K in keyof TRecord]: TRecord[K] extends SenderMessage<AnyPayload>
           ? DecorateSenderMessage<TRecord[K]>
-          : TRecord[K] extends SenderMessageRecord<AnyHeader>
+          : TRecord[K] extends SenderMessageRecord
           ? DecorateSenderMessageRecord<TRecord[K]>
           : never;
       } & {

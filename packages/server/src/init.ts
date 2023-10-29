@@ -4,7 +4,6 @@ import { createRecursiveProxy } from "./proxy";
 import { Adapter } from "./adapter/types";
 
 import {
-  AnyHeader,
   AnyMiddlewareFn,
   AnyReceiverMessage,
   InferReceiverMessageRecord,
@@ -23,30 +22,30 @@ import {
 } from "./types";
 
 const createReceiverFactory = <THeader, TContext>(
-  middlewares: AnyMiddlewareFn<THeader>[]
+  middlewares: AnyMiddlewareFn[] = []
 ) => ({
-  messages: <TMessages extends SchemaReceiverMessageRecord<THeader>>(
+  messages: <TMessages extends SchemaReceiverMessageRecord>(
     messages: TMessages
   ) => messages as any as InferReceiverMessageRecord<TMessages>,
   message: () => ({
-    on: (handler: ReceiverMessageHandlerFn<THeader, TContext, null>) =>
+    on: (handler: ReceiverMessageHandlerFn<TContext, null>) =>
       ({
         _tag: "receiver",
         middlewares,
         payloadSchema: null,
         handler,
-      } as any as SchemaReceiverMessage<THeader, TContext, null>),
+      } as any as SchemaReceiverMessage<TContext, null>),
     payload: <TPayload>(payloadSchema: z.Schema<TPayload>) => ({
-      on: (handler: ReceiverMessageHandlerFn<THeader, TContext, TPayload>) =>
+      on: (handler: ReceiverMessageHandlerFn<TContext, TPayload>) =>
         ({
           _tag: "receiver",
           middlewares,
           payloadSchema,
           handler,
-        } as SchemaReceiverMessage<THeader, TContext, TPayload>),
+        } as SchemaReceiverMessage<TContext, TPayload>),
     }),
   }),
-  use: <TMiddlewareFn extends MiddlewareFn<THeader, TContext>>(
+  use: <TMiddlewareFn extends MiddlewareFn<TContext>>(
     middleware: TMiddlewareFn
   ) =>
     createReceiverFactory<
@@ -84,24 +83,24 @@ export const createSenderFactory = <THeader, TAdapter extends Adapter>(
     payload: <TPayload>(payloadSchema: z.Schema<TPayload>) =>
       ({
         _tag: "sender",
-      } as SchemaSenderMessage<THeader, TPayload>),
+      } as SchemaSenderMessage<TPayload>),
   }),
 });
 
 function createMessageMap(
-  messages: ReceiverMessageRecord<AnyHeader>,
-  messageMap = new Map<String, AnyReceiverMessage<AnyHeader>>(),
+  messages: ReceiverMessageRecord,
+  messageMap = new Map<String, AnyReceiverMessage>(),
   prefix = ""
 ) {
   Object.entries(messages).forEach(([key, value]) => {
     if (value._tag !== "receiver") {
       //if _tag is present, it is a receiver message
-      const messageRecord = value as ReceiverMessageRecord<AnyHeader>;
+      const messageRecord = value as ReceiverMessageRecord;
       const newPrefix = `${prefix}${key}.`;
       createMessageMap(messageRecord, messageMap, newPrefix);
     } else {
       //else it is a receiver message record
-      const message = value as AnyReceiverMessage<AnyHeader>;
+      const message = value as AnyReceiverMessage;
       messageMap.set(`${prefix}${key}`, message);
     }
   });
@@ -125,8 +124,8 @@ export function init<THeader, TContext, TAdapter extends Adapter>(
     ),
     sender: createSenderFactory<THeader, TAdapter>(config.adapter),
     create: <
-      TReceiverMessages extends ReceiverMessageRecord<THeader>,
-      TSenderMessages extends SenderMessageRecord<THeader>
+      TReceiverMessages extends ReceiverMessageRecord,
+      TSenderMessages extends SenderMessageRecord
     >(opts: {
       receiverMessages: TReceiverMessages;
       senderMessages: TSenderMessages;
@@ -134,7 +133,7 @@ export function init<THeader, TContext, TAdapter extends Adapter>(
       const messageMap = createMessageMap(opts.receiverMessages);
 
       return {
-        _schema: {} as SocksType<THeader, TReceiverMessages, TSenderMessages>,
+        _schema: {} as SocksType<TReceiverMessages, TSenderMessages>,
         ...(config.adapter.create(messageMap) as ReturnType<
           TAdapter["create"]
         >),

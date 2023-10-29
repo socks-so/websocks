@@ -19,9 +19,13 @@ describe("integration test", () => {
 
   test("should integrate", async (ctx) => {
     const s = init({
-      header: z.string(),
       context: () => "test",
       adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
+    });
+
+    const betterReceiver = s.receiver.use((ctx) => {
+      console.log("better receiver:");
+      return ctx;
     });
 
     const sender = s.sender.messages({
@@ -35,6 +39,14 @@ describe("integration test", () => {
         .on(({ wid, payload }) => {
           console.log("[SERVER]: received test message, payload:" + payload);
           sender.test("Hi from server").toRoom("test");
+        }),
+      betterTest: betterReceiver
+        .message()
+        .payload(z.string())
+        .on(({ payload }) => {
+          console.log(
+            "[SERVER]: received betterTest message, payload:" + payload
+          );
         }),
       joinRoom: s.receiver
         .message()
@@ -76,6 +88,7 @@ describe("integration test", () => {
     await new Promise((resovle) =>
       setTimeout(() => {
         cli1.send.test("Hi from client 1");
+        cli2.send.betterTest("better Hi from client 2");
         resovle(null);
       }, 1000)
     );

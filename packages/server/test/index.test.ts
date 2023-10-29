@@ -29,20 +29,18 @@ describe("server", () => {
       greet: s.receiver
         .message()
         .payload(z.object({ username: z.string() }))
-        .on(({ wid, payload, header, context }) => {
+        .on(({ wid, payload, context }) => {
           console.log("greet2! " + payload.username);
           senderMessages.greet({ username: "WAUUZO!" }).to(wid);
         }),
       auth: {
-        login: authReceiver.message().on(({ header, context }) => {
+        login: authReceiver.message().on(({ context }) => {
           console.log("login");
           console.log(context.user);
         }),
-        logout: authReceiver.message().on(({ header, context }) => {}),
+        logout: authReceiver.message().on(({ context }) => {}),
       },
     });
-
-    senderMessages.greet({ username: "rahul" }).broadcast();
 
     const server = s.create({
       receiverMessages,
