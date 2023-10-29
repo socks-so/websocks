@@ -1,4 +1,8 @@
 import { Command } from "commander";
+import { z } from "zod";
+import { PresignedPost } from "@aws-sdk/s3-presigned-post";
+import { deploy } from "./deploy";
+
 const program = new Command();
 
 program
@@ -11,15 +15,11 @@ program
   .requiredOption("-t, --token <token>", "token to deploy")
   .option("-p, --path [path]", "path to deploy", "./")
   .description("deploy a websocks server")
-  .action(({ token, path }) => {
-    deploy(token, path);
+  .action(async ({ token, path }) => {
+    await deploy(token, path);
   });
 
 program.parse(process.argv);
 if (!process.argv.slice(2).length) {
   program.outputHelp();
-}
-
-function deploy(token: string, path: string) {
-  console.log("Looking for websocks export in " + path);
 }
