@@ -1,6 +1,6 @@
 {
   "name": "@websocks/server",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -36,19 +36,23 @@
     "./package.json": "./package.json",
     ".": {
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./adapters/socks": {
       "import": "./dist/adapters/socks.mjs",
-      "require": "./dist/adapters/socks.js"
+      "require": "./dist/adapters/socks.js",
+      "default": "./dist/adapters/socks.js"
     },
     "./adapters/node": {
       "import": "./dist/adapters/node.mjs",
-      "require": "./dist/adapters/node.js"
+      "require": "./dist/adapters/node.js",
+      "default": "./dist/adapters/node.js"
     },
     "./adapters/bun": {
       "import": "./dist/adapters/bun.mjs",
-      "require": "./dist/adapters/bun.js"
+      "require": "./dist/adapters/bun.js",
+      "default": "./dist/adapters/bun.js"
     }
   }
 }
