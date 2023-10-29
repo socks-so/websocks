@@ -9,7 +9,7 @@ import { WebSocketServer } from "ws";
 describe("server", () => {
   it("should work", () => {
     const s = init({
-      adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
+      adapter: createNodeAdapter(new WebSocketServer({ port: 8081 })),
     });
 
     const authReceiver = s.receiver.use((opts) => {

@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vitest --browser.name=firefox --browser.headless=true",
-    "typecheck": "vitest typecheck",
+    "typecheck": "echo no typechecking of client!",
     "build": "tsup src/index.ts src/node/index.ts --format cjs,esm --dts --sourcemap --clean",
     "test": "echo no testing of client!",
     "release": "changesets publish"

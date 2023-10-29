@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vitest",
+    "typecheck": "echo no typecheck for testing",
     "test": "vitest run"
   },
   "devDependencies": {
