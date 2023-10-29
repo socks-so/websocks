@@ -69,11 +69,11 @@ describe("integration test", () => {
     const cli1 = client<schema>("ws://localhost:8080");
     const cli2 = client<schema>("ws://localhost:8080");
 
-    cli1.on.test((payload) => {
+    cli1.on.test(({ payload }) => {
       console.log("[CLIENT 1]: received test message, payload:", payload);
     });
 
-    cli2.on.test((payload) => {
+    cli2.on.test(({ payload }) => {
       console.log("[CLIENT 2]: received test message, payload:", payload);
     });
 
