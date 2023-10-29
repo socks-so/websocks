@@ -1,10 +1,9 @@
-import { init } from "../server/src/index";
-import { createNodeAdapter } from "../server/src/adapters/node";
+import { init } from "../../server/src/index";
+import { createNodeAdapter } from "../../server/src/adapters/node";
 import { WebSocketServer } from "ws";
 import z from "zod";
 
 const s = init({
-  header: z.string(),
   context: () => "test",
   adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
 });

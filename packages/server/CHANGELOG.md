@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.2.5
+
+### Patch Changes
+
+- 9830ff3: removed headers
+
 ## 0.2.4
 
 ### Patch Changes
