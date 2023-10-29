@@ -1,10 +1,4 @@
-import {
-  AnyContext,
-  AnyHeader,
-  AnyReceiverMessage,
-  ConnectFn,
-  TConfig,
-} from "../types";
+import { AnyReceiverMessage } from "../types";
 
 export interface AdapterArgs {
   message?: (wid: string, data: unknown) => void;

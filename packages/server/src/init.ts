@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { createRecursiveProxy } from "./proxy";
 
-import { Adapter } from "./adapter/types";
+import { Adapter } from "./adapters/types";
 
 import {
   AnyMiddlewareFn,

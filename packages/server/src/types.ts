@@ -10,7 +10,7 @@ type JsonArray = Array<JsonPrimitive | JsonMap | JsonArray>;
 export type JsonSerializable = JsonPrimitive | JsonMap | JsonArray;
 
 import { z } from "zod";
-import { Adapter } from "./adapter/types";
+import { Adapter } from "./adapters/types";
 
 export type AnyHeader = any;
 export type AnyContext = any;

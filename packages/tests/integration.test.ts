@@ -3,7 +3,7 @@ import { describe, test } from "vitest";
 import { init } from "../server/src/index";
 
 import { client } from "@websocks/client/src/node/index";
-import { createNodeAdapter } from "../server/src/adapter/node";
+import { createNodeAdapter } from "../server/src/adapters/node";
 
 import { z } from "zod";
 import { WebSocketServer } from "ws";

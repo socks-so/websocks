@@ -1,5 +1,5 @@
 import { init } from "../server/src/index";
-import { createNodeAdapter } from "../server/src/adapter/node";
+import { createNodeAdapter } from "../server/src/adapters/node";
 import { WebSocketServer } from "ws";
 import z from "zod";
 
