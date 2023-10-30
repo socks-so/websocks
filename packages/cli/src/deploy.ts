@@ -1,4 +1,5 @@
 import { PresignedPost } from "@aws-sdk/s3-presigned-post";
+import fs from "fs";
 
 type GetUrlSuccess = {
   status: number;
@@ -13,7 +14,10 @@ type GetUrlError = {
 
 export async function deploy(token: string, path: string) {
   const url =
-    "https://qulem8hglj.execute-api.eu-central-1.amazonaws.com/getUrl/" + token;
+    "https://hk10pi3as3.execute-api.eu-central-1.amazonaws.com/getUrl/" + token;
+  const file = buildFile(path);
+  console.log(file);
+
   const data = await fetchUrl(url);
   if (data.status !== 200) {
     const error = data as GetUrlError;
@@ -23,7 +27,32 @@ export async function deploy(token: string, path: string) {
     return;
   }
   const success = data as GetUrlSuccess;
-  const uploadData = success.body.uploadData;
+
+  const res = await uploadFile(success.body.uploadData, file);
+  if (!res.ok) {
+    console.error("Failed to upload file with message: " + res.statusText);
+    return;
+  } else {
+    console.log("Successfully uploaded your file, deploying...");
+  }
+}
+
+function buildFile(path: string) {
+  const file = fs.readFileSync(path + "test.txt");
+  const blob = new Blob([file], { type: "text/plain" });
+  return blob;
+}
+
+function uploadFile(presignedData: PresignedPost, file: Blob) {
+  const formData = new FormData();
+  Object.keys(presignedData.fields).forEach((key) => {
+    formData.append(key, presignedData.fields[key]);
+  });
+  formData.append("file", file);
+  return fetch(presignedData.url, {
+    method: "POST",
+    body: formData,
+  });
 }
 
 async function fetchUrl(url: string): Promise<GetUrlError | GetUrlSuccess> {
