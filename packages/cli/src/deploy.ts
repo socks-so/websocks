@@ -12,13 +12,24 @@ type GetUrlError = {
   body: { error: string };
 };
 
-export async function deploy(token: string, path: string) {
-  const url =
-    "https://hk10pi3as3.execute-api.eu-central-1.amazonaws.com/getUrl/" + token;
-  const file = buildFile(path);
-  console.log(file);
+type GetDeployStatus = {
+  status: number;
+  body: string;
+};
 
-  const data = await fetchUrl(url);
+let tries = 0;
+
+export async function deploy(token: string, path: string) {
+  const apiUrl = "https://hk10pi3as3.execute-api.eu-central-1.amazonaws.com";
+  const requestUrl = apiUrl + "/getUrl/" + token;
+  const statusUrl = apiUrl + "/uploadStatus";
+
+  console.log("Building websocks...");
+  const file = buildFile(path);
+  console.log("Building finished!");
+
+  console.log("Requesting upload URL...");
+  const data = await fetchUrl(requestUrl);
   if (data.status !== 200) {
     const error = data as GetUrlError;
     console.error(
@@ -26,15 +37,64 @@ export async function deploy(token: string, path: string) {
     );
     return;
   }
+  console.log("Got URL to upload file!");
   const success = data as GetUrlSuccess;
+  const functionName = success.body.uploadData.fields.key;
 
+  console.log("Uploading websocks server files...");
   const res = await uploadFile(success.body.uploadData, file);
   if (!res.ok) {
     console.error("Failed to upload file with message: " + res.statusText);
     return;
   } else {
-    console.log("Successfully uploaded your file, deploying...");
+    console.log("Successfully uploaded files!");
+    console.log("Deploying websocks server...");
+    tries = 0;
+    await monitorDeployment(statusUrl, functionName);
   }
+}
+
+async function monitorDeployment(statusUrl: string, functionName: string) {
+  tries++;
+  if (tries > 20) {
+    console.error(
+      "Your server may be deployed, but the CLI failed to check the status. Check your dashboard!"
+    );
+    return;
+  }
+  setTimeout(async () => {
+    const status = await checkStatus(statusUrl, functionName);
+    if (status.status == 200) {
+      console.log(
+        "Successfully deployed websocks server with the function name: " +
+          functionName
+      );
+    } else if (status.status == 202) {
+      await monitorDeployment(statusUrl, functionName);
+    } else {
+      console.error(
+        "Failed to deploy websocks server with the error: " + status.body
+      );
+    }
+  }, 1000);
+}
+
+async function checkStatus(url: string, functionName: string) {
+  const deployStatus = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      functionName: functionName,
+    }),
+  });
+  if (!deployStatus.ok) {
+    console.error(
+      "Failed to check status with message: " +
+        deployStatus.body +
+        ". Our status API may be down. Please check your dashboard!"
+    );
+  }
+  const data = (await deployStatus.json()) as GetDeployStatus;
+  return data;
 }
 
 function buildFile(path: string) {
