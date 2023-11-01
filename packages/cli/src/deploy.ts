@@ -21,7 +21,7 @@ let tries = 0;
 
 export async function deploy(token: string, path: string) {
   const apiUrl = "https://hk10pi3as3.execute-api.eu-central-1.amazonaws.com";
-  const requestUrl = apiUrl + "/getUrl/" + token;
+  const requestUrl = apiUrl + "/getUrl";
   const statusUrl = apiUrl + "/uploadStatus";
 
   console.log("Building websocks...");
@@ -29,7 +29,7 @@ export async function deploy(token: string, path: string) {
   console.log("Building finished!");
 
   console.log("Requesting upload URL...");
-  const data = await fetchUrl(requestUrl);
+  const data = await fetchUrl(requestUrl, token);
   if (data.status !== 200) {
     const error = data as GetUrlError;
     console.error(
@@ -115,9 +115,17 @@ function uploadFile(presignedData: PresignedPost, file: Blob) {
   });
 }
 
-async function fetchUrl(url: string): Promise<GetUrlError | GetUrlSuccess> {
+async function fetchUrl(
+  url: string,
+  token: string
+): Promise<GetUrlError | GetUrlSuccess> {
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        token: token,
+      }),
+    });
     if (!response.ok) {
       throw new Error("Internal server error");
     }
