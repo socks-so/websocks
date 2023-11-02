@@ -7,7 +7,7 @@ import {
   SenderMessage,
   SenderMessageRecord,
   SocksType,
-} from "@websocks/server/types";
+} from "../../server/src/types";
 
 export type AnySocksType = SocksType<
   ReceiverMessageRecord,
@@ -22,7 +22,7 @@ export type InferReceiverMessagePayload<T> = T extends ReceiverMessage<
   : never;
 
 export type DecorateReceiverMessage<
-  T extends ReceiverMessage<AnyContext, AnyHeader>
+  T extends ReceiverMessage<AnyContext, AnyHeader>,
 > = (payload: InferReceiverMessagePayload<T>) => void;
 
 export type DecorateReceiverMessageRecord<TRecord> =
@@ -48,7 +48,7 @@ export type InferSenderMessagePayload<T> = T extends SenderMessage<
 export type AnySenderMessage = SenderMessage<AnyPayload>;
 
 export type DecorateSenderMessage<
-  TSenderMessage extends SenderMessage<AnyPayload>
+  TSenderMessage extends SenderMessage<AnyPayload>,
 > = (
   handler: (args: {
     payload: InferSenderMessagePayload<TSenderMessage>;
