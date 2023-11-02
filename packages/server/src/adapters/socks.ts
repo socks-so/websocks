@@ -38,6 +38,7 @@ export function createSocksAdapter(config: SocksAdapterConfig) {
 
     create(messageMap) {
       const handler: Handler<Event> = async (event, context) => {
+        console.log(event);
         const { wid, data } = event;
         const { type, payload } = data;
 

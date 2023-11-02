@@ -20,7 +20,7 @@ type GetDeployStatus = {
 let tries = 0;
 
 export async function deploy(token: string, path: string) {
-  const apiUrl = "https://hk10pi3as3.execute-api.eu-central-1.amazonaws.com";
+  const apiUrl = "https://ftjtxs1aig.execute-api.eu-central-1.amazonaws.com";
   const requestUrl = apiUrl + "/getUrl";
   const statusUrl = apiUrl + "/uploadStatus";
 
@@ -50,7 +50,7 @@ export async function deploy(token: string, path: string) {
     console.log("Successfully uploaded files!");
     console.log("Deploying websocks server...");
     tries = 0;
-    await monitorDeployment(statusUrl, functionName);
+    await monitorDeployment(statusUrl, functionName!);
   }
 }
 
@@ -98,7 +98,7 @@ async function checkStatus(url: string, functionName: string) {
 }
 
 function buildFile(path: string) {
-  const file = fs.readFileSync(path + "test.txt");
+  const file = fs.readFileSync(path + "test.mjs");
   const blob = new Blob([file], { type: "text/plain" });
   return blob;
 }
@@ -129,7 +129,7 @@ async function fetchUrl(
     if (!response.ok) {
       throw new Error("Internal server error");
     }
-    const responseData = await response.json();
+    const responseData = (await response.json()) as any;
     if (responseData.status == 200) {
       return {
         status: responseData.status,
