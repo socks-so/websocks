@@ -7,9 +7,9 @@ interface SocksAdapterConfig {
 }
 
 interface Event {
+  action: "message"; //other actions yet to be defined
   wid: string;
-  type: string;
-  payload: unknown;
+  data: any;
 }
 
 import { handleMessage } from "../message-handler";
@@ -38,9 +38,8 @@ export function createSocksAdapter(config: SocksAdapterConfig) {
 
     create(messageMap) {
       const handler: Handler<Event> = async (event, context) => {
-        console.log(event);
-        const { wid, type, payload } = event;
-        const data = { type, payload };
+        const { wid, data } = event;
+        const { type, payload } = data;
 
         const message = messageMap.get(type);
 

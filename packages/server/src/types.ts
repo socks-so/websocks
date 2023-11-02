@@ -19,10 +19,11 @@ export type AnyPayload = any;
 export type AnyAdapter = Adapter;
 
 export type TConfig<
-  THeader extends AnyHeader, //header temporarily removed until I figure out what to do with it
+  THeader extends AnyHeader,
   TContext extends AnyContext,
-  TAdapter extends Adapter
+  TAdapter extends Adapter,
 > = {
+  connect?: ConnectFn<THeader, TContext>;
   context?: ContextFn<TContext>;
   adapter: TAdapter;
 };
@@ -185,7 +186,7 @@ export type AnyReceiverMessage = ReceiverMessage<AnyContext, AnyPayload>;
 
 export type SocksType<
   TReceiverMessages extends ReceiverMessageRecord,
-  TSenderMessgages extends SenderMessageRecord
+  TSenderMessgages extends SenderMessageRecord,
 > = {
   receiverMessages: TReceiverMessages;
   senderMessages: TSenderMessgages;
