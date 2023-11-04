@@ -19,7 +19,7 @@ export const client = <TSocks extends AnySocksType>(url: string) => {
   };
 
   socket.onmessage = (event) => {
-    const { type, payload } = JSON.parse(JSON.parse(event.data.toString())); //WTF why should i parse this twice?!
+    const { type, payload } = JSON.parse(event.data.toString());
     emitter.emit(type, payload);
   };
 

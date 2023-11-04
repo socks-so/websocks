@@ -52,8 +52,10 @@ var createSenderFactory = (adapter) => ({
         toRoom: (rid) => {
           adapter.toRoom(rid, JSON.stringify({ type: pathString, payload }));
         },
-        broadcast: () => {
-          adapter.broadcast(JSON.stringify({ type: pathString, payload }));
+        broadcast: async () => {
+          await adapter.broadcast(
+            JSON.stringify({ type: pathString, payload })
+          );
         }
       };
     }, []);
@@ -102,10 +104,10 @@ function init(config) {
 }
 
 // ../server/src/message-handler.ts
-function handleMessage(message, data, wid) {
+async function handleMessage(message, data, wid) {
   const payload = message.payloadSchema?.parse(data.payload);
   const context = handleContext(message);
-  message.handler({
+  await message.handler({
     wid,
     payload,
     context
@@ -122,7 +124,19 @@ function createSocksAdapter(config) {
     },
     toRoom(rid, data) {
     },
-    broadcast(data) {
+    async broadcast(data) {
+      console.log("Broadcasting", data);
+      await fetch(
+        "https://i7665hzd84.execute-api.eu-central-1.amazonaws.com/service/broadcast",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            token: config.token,
+            data
+          })
+        }
+      );
+      console.log("Broadcasted");
     },
     join(wid, rid) {
     },
@@ -130,14 +144,13 @@ function createSocksAdapter(config) {
     },
     create(messageMap) {
       const handler2 = async (event, context) => {
-        console.log(event);
         const { wid, data } = event;
         const { type, payload } = data;
         const message = messageMap.get(type);
         if (!message) {
           throw new Error(`Unknown message type: ${type}`);
         }
-        handleMessage(message, data, wid);
+        await handleMessage(message, data, wid);
       };
       return { handler: handler2 };
     }
@@ -3881,15 +3894,16 @@ var z = /* @__PURE__ */ Object.freeze({
 var s = init({
   context: () => ({}),
   adapter: createSocksAdapter({
-    token: "123"
+    token: "discord"
   })
 });
 var sender = s.sender.messages({
   test: s.sender.message().payload(z.string())
 });
 var receiver = s.receiver.messages({
-  test: s.receiver.message().payload(z.string()).on(({ payload }) => {
-    console.log(payload);
+  test: s.receiver.message().payload(z.string()).on(async ({ payload }) => {
+    console.log("Message received:", payload);
+    await sender.test("Server sending message! " + payload).broadcast();
   })
 });
 var handler = s.create({

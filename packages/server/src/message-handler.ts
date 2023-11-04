@@ -1,7 +1,7 @@
 import { Message } from "./message";
 import { AnyReceiverMessage } from "./types";
 
-export function handleMessage(
+export async function handleMessage(
   message: AnyReceiverMessage,
   data: Message,
   wid: string
@@ -10,7 +10,7 @@ export function handleMessage(
 
   const context = handleContext(message);
 
-  message.handler({
+  await message.handler({
     wid,
     payload,
     context,

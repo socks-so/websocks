@@ -5,7 +5,7 @@ import { z } from "zod";
 const s = init({
   context: () => ({}),
   adapter: createSocksAdapter({
-    token: "123",
+    token: "discord",
   }),
 });
 
@@ -17,12 +17,17 @@ const receiver = s.receiver.messages({
   test: s.receiver
     .message()
     .payload(z.string())
-    .on(({ payload }) => {
-      console.log(payload);
+    .on(async ({ payload }) => {
+      console.log("Message received:", payload);
+      await sender.test("Server sending message! " + payload).broadcast();
     }),
 });
 
-export const handler = s.create({
+const server = s.create({
   receiverMessages: receiver,
   senderMessages: sender,
-}).handler;
+});
+
+export const handler = server.handler;
+
+export type Schema = (typeof server)["_schema"];

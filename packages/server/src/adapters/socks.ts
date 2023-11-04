@@ -24,8 +24,19 @@ export function createSocksAdapter(config: SocksAdapterConfig) {
       //api.socks.so/to-room -> { rid, message }
     },
 
-    broadcast(data: unknown) {
-      //api.socks.so/broadcast { message }
+    async broadcast(data: unknown) {
+      console.log("Broadcasting", data);
+      await fetch(
+        "https://i7665hzd84.execute-api.eu-central-1.amazonaws.com/service/broadcast",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            token: config.token,
+            data,
+          }),
+        }
+      );
+      console.log("Broadcasted");
     },
 
     join(wid: string, rid: string) {
@@ -38,7 +49,6 @@ export function createSocksAdapter(config: SocksAdapterConfig) {
 
     create(messageMap) {
       const handler: Handler<Event> = async (event, context) => {
-        console.log(event);
         const { wid, data } = event;
         const { type, payload } = data;
 
@@ -48,7 +58,7 @@ export function createSocksAdapter(config: SocksAdapterConfig) {
           throw new Error(`Unknown message type: ${type}`);
         }
 
-        handleMessage(message, data, wid);
+        await handleMessage(message, data, wid);
       };
 
       return { handler };

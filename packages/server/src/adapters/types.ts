@@ -10,7 +10,7 @@ export interface AdapterArgs {
 export interface Adapter {
   to: (wid: string, data: any) => void;
   toRoom: (rid: string, data: any) => void;
-  broadcast: (data: any) => void;
+  broadcast: (data: any) => Promise<void>;
 
   join: (wid: string, rid: string) => void;
   leave: (wid: string, rid: string) => void;

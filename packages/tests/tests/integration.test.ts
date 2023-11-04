@@ -2,8 +2,8 @@ import { describe, test } from "vitest";
 
 import { init } from "../../server/src/index";
 
-import { client } from "@websocks/client/src/node/index";
-import { createNodeAdapter } from "../../server/src/adapters/node";
+import { client } from "../../client/src/node/index";
+import { createSocksAdapter } from "../../server/src/adapters/socks";
 
 import { z } from "zod";
 import { WebSocketServer } from "ws";
@@ -20,7 +20,7 @@ describe("integration test", () => {
   test("should integrate", async (ctx) => {
     const s = init({
       context: () => "test",
-      adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
+      adapter: createSocksAdapter({ token: "discord" }),
     });
 
     const betterReceiver = s.receiver.use((ctx) => {
@@ -70,19 +70,7 @@ describe("integration test", () => {
     const cli2 = client<schema>("ws://localhost:8080");
 
     cli1.on.test(({ payload }) => {
-      console.log("[CLIENT 1]: received test message, payload:", payload);
-    });
-
-    cli2.on.test(({ payload }) => {
-      console.log("[CLIENT 2]: received test message, payload:", payload);
-    });
-
-    cli1.on.open(() => {
-      cli1.send.joinRoom({ rid: "test" });
-    });
-
-    cli2.on.open(() => {
-      cli2.send.joinRoom({ rid: "test" });
+      console.log("[CLIENT 1]: received test message, payload:" + payload);
     });
 
     await new Promise((resovle) =>
