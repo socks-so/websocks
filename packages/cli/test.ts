@@ -30,4 +30,4 @@ const server = s.create({
 
 export const handler = server.handler;
 
-export type Schema = (typeof server)["_schema"];
+export type Schema = typeof server.schema;

@@ -34,7 +34,7 @@ const createReceiverFactory = <THeader, TContext>(
         middlewares,
         payloadSchema: null,
         handler,
-      } as any as SchemaReceiverMessage<TContext, null>),
+      }) as any as SchemaReceiverMessage<TContext, null>,
     payload: <TPayload>(payloadSchema: z.Schema<TPayload>) => ({
       on: (handler: ReceiverMessageHandlerFn<TContext, TPayload>) =>
         ({
@@ -42,7 +42,7 @@ const createReceiverFactory = <THeader, TContext>(
           middlewares,
           payloadSchema,
           handler,
-        } as SchemaReceiverMessage<TContext, TPayload>),
+        }) as SchemaReceiverMessage<TContext, TPayload>,
     }),
   }),
   use: <TMiddlewareFn extends MiddlewareFn<TContext>>(
@@ -85,7 +85,7 @@ export const createSenderFactory = <THeader, TAdapter extends Adapter>(
     payload: <TPayload>(payloadSchema: z.Schema<TPayload>) =>
       ({
         _tag: "sender",
-      } as SchemaSenderMessage<TPayload>),
+      }) as SchemaSenderMessage<TPayload>,
   }),
 });
 
@@ -127,7 +127,7 @@ export function init<THeader, TContext, TAdapter extends Adapter>(
     sender: createSenderFactory<THeader, TAdapter>(config.adapter),
     create: <
       TReceiverMessages extends ReceiverMessageRecord,
-      TSenderMessages extends SenderMessageRecord
+      TSenderMessages extends SenderMessageRecord,
     >(opts: {
       receiverMessages: TReceiverMessages;
       senderMessages: TSenderMessages;
@@ -135,7 +135,7 @@ export function init<THeader, TContext, TAdapter extends Adapter>(
       const messageMap = createMessageMap(opts.receiverMessages);
 
       return {
-        _schema: {} as SocksType<TReceiverMessages, TSenderMessages>,
+        schema: {} as SocksType<TReceiverMessages, TSenderMessages>,
         ...(config.adapter.create(messageMap) as ReturnType<
           TAdapter["create"]
         >),
