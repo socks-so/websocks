@@ -114,12 +114,8 @@ export function init<THeader, TContext, TAdapter extends Adapter>(
 ) {
   return {
     rooms: {
-      join: (rid: string, wid: string) => {
-        config.adapter.join(wid, rid);
-      },
-      leave: (rid: string, wid: string) => {
-        config.adapter.leave(wid, rid);
-      },
+      join: config.adapter.join,
+      leave: config.adapter.leave,
     },
     receiver: createReceiverFactory<THeader, TContext>(
       config.context ? [config.context] : []
