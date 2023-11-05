@@ -24,7 +24,7 @@ export function createNodeAdapter(wss: WebSocketServer) {
       }
     },
 
-    broadcast(data) {
+    async broadcast(data) {
       for (const ws of clientToWid.keys()) {
         const dataJson = JSON.stringify(data);
         ws.send(dataJson);
