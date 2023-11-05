@@ -1,7 +1,7 @@
 import { WebSocketServer, WebSocket, RawData } from "ws";
 import { randomUUID } from "crypto";
-import { handleMessage } from "../message-handler";
 
+import { handleMessage } from "../message-handler";
 import { Adapter } from "./types";
 import { Message } from "../message";
 
@@ -13,12 +13,12 @@ export function createNodeAdapter(wss: WebSocketServer) {
   const widInRooms = new Map<string, Set<string>>();
 
   return {
-    to(wid, data) {
+    async to(wid, data) {
       const dataJson = JSON.stringify(data);
       widToClient.get(wid)?.send(dataJson);
     },
 
-    toRoom(rid, data) {
+    async toRoom(rid, data) {
       for (const wid of rooms.get(rid) || []) {
         this.to(wid, data);
       }
@@ -31,7 +31,7 @@ export function createNodeAdapter(wss: WebSocketServer) {
       }
     },
 
-    join(wid, rid) {
+    async join(wid, rid) {
       if (!rooms.has(rid)) {
         rooms.set(rid, new Set());
       }
@@ -43,7 +43,7 @@ export function createNodeAdapter(wss: WebSocketServer) {
       widInRooms.get(wid)?.add(rid);
     },
 
-    leave(wid, rid) {
+    async leave(wid, rid) {
       rooms.get(rid)?.delete(wid);
       widInRooms.get(wid)?.delete(rid);
     },

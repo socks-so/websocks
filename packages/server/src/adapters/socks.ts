@@ -1,5 +1,6 @@
 import { Handler } from "aws-lambda";
 
+import { handleMessage } from "../message-handler";
 import { Adapter } from "./types";
 
 interface SocksAdapterConfig {
@@ -12,39 +13,68 @@ interface Event {
   data: any;
 }
 
-import { handleMessage } from "../message-handler";
+export function createSocksAdapter({ token }: SocksAdapterConfig) {
+  const apiBaseUrl = "https://api.socks.so";
 
-export function createSocksAdapter(config: SocksAdapterConfig) {
   return {
-    to(wid: string, data: unknown) {
-      //api.socks.so/to -> { wid, message }
+    async to(wid: string, data: unknown) {
+      const toUrl = new URL("/to", apiBaseUrl);
+      await fetch(toUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ token, wid, data }),
+      });
     },
 
-    toRoom(rid: string, data: unknown) {
-      //api.socks.so/to-room -> { rid, message }
+    async toRoom(rid: string, data: unknown) {
+      const toRoomUrl = new URL("/to-room", apiBaseUrl);
+      await fetch(toRoomUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ token, rid, data }),
+      });
     },
 
     async broadcast(data: unknown) {
-      console.log("Broadcasting", data);
-      await fetch(
-        "https://i7665hzd84.execute-api.eu-central-1.amazonaws.com/service/broadcast",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            token: config.token,
-            data,
-          }),
-        }
-      );
-      console.log("Broadcasted");
+      const broadcastUrl = new URL("/broadcast", apiBaseUrl);
+      await fetch(broadcastUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ token, data }),
+      });
     },
 
-    join(wid: string, rid: string) {
-      //api.socks.so/join -> { wid, rid }
+    async join(wid: string, rid: string) {
+      const joinUrl = new URL("/join", apiBaseUrl);
+      await fetch(joinUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ token, wid, rid }),
+      });
     },
 
-    leave(wid: string, rid: string) {
-      //api.socks.so/leave -> { wid, rid }
+    async leave(wid: string, rid: string) {
+      const leaveUrl = new URL("/leave", apiBaseUrl);
+      await fetch(leaveUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ token, wid, rid }),
+      });
     },
 
     create(messageMap) {
