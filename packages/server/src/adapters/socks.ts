@@ -14,11 +14,11 @@ interface Event {
 }
 
 export function createSocksAdapter({ token }: SocksAdapterConfig) {
-  const apiBaseUrl = "https://api.socks.so";
+  const apiURL = new URL("https://api.socks.so");
 
   return {
     async to(wid: string, data: unknown) {
-      const toUrl = new URL("/to", apiBaseUrl);
+      const toUrl = new URL("/to", apiURL);
       await fetch(toUrl, {
         method: "POST",
         headers: {
@@ -30,7 +30,7 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
     },
 
     async toRoom(rid: string, data: unknown) {
-      const toRoomUrl = new URL("/to-room", apiBaseUrl);
+      const toRoomUrl = new URL("/to-room", apiURL);
       await fetch(toRoomUrl, {
         method: "POST",
         headers: {
@@ -42,7 +42,7 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
     },
 
     async broadcast(data: unknown) {
-      const broadcastUrl = new URL("/broadcast", apiBaseUrl);
+      const broadcastUrl = new URL("/broadcast", apiURL);
       await fetch(broadcastUrl, {
         method: "POST",
         headers: {
@@ -54,7 +54,7 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
     },
 
     async join(wid: string, rid: string) {
-      const joinUrl = new URL("/join", apiBaseUrl);
+      const joinUrl = new URL("/join", apiURL);
       await fetch(joinUrl, {
         method: "POST",
         headers: {
@@ -66,7 +66,7 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
     },
 
     async leave(wid: string, rid: string) {
-      const leaveUrl = new URL("/leave", apiBaseUrl);
+      const leaveUrl = new URL("/leave", apiURL);
       await fetch(leaveUrl, {
         method: "POST",
         headers: {
@@ -80,12 +80,11 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
     create(messageMap) {
       const handler: Handler<Event> = async (event, context) => {
         const { wid, data } = event;
-        const { type, payload } = data;
 
-        const message = messageMap.get(type);
+        const message = messageMap.get(data.type);
 
         if (!message) {
-          throw new Error(`Unknown message type: ${type}`);
+          throw new Error(`Unknown message type: ${data.type}`);
         }
 
         await handleMessage(message, data, wid);

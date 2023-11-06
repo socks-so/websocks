@@ -3,7 +3,7 @@ import { describe, test } from "vitest";
 import { init } from "../../server/src/index";
 
 import { client } from "../../client/src/node/index";
-import { createSocksAdapter } from "../../server/src/adapters/socks";
+import { createNodeAdapter } from "../../server/src/adapters/node";
 
 import { z } from "zod";
 import { WebSocketServer } from "ws";
@@ -20,7 +20,7 @@ describe("integration test", () => {
   test("should integrate", async (ctx) => {
     const s = init({
       context: () => "test",
-      adapter: createSocksAdapter({ token: "discord" }),
+      adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
     });
 
     const betterReceiver = s.receiver.use((ctx) => {
@@ -64,7 +64,7 @@ describe("integration test", () => {
       senderMessages: sender,
     });
 
-    type schema = (typeof server)["_schema"];
+    type schema = (typeof server)["schema"];
 
     const cli1 = client<schema>("ws://localhost:8080");
     const cli2 = client<schema>("ws://localhost:8080");
