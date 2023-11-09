@@ -14,7 +14,7 @@ interface Event {
 }
 
 export function createSocksAdapter({ token }: SocksAdapterConfig) {
-  const apiURL = new URL("https://api.socks.so");
+  const apiURL = new URL("https://d2cq53hdb52m3c.cloudfront.net");
 
   return {
     async to(wid: string, data: unknown) {

@@ -82,12 +82,8 @@ function createMessageMap(messages, messageMap = /* @__PURE__ */ new Map(), pref
 function init(config) {
   return {
     rooms: {
-      join: (rid, wid) => {
-        config.adapter.join(wid, rid);
-      },
-      leave: (rid, wid) => {
-        config.adapter.leave(wid, rid);
-      }
+      join: config.adapter.join,
+      leave: config.adapter.leave
     },
     receiver: createReceiverFactory(
       config.context ? [config.context] : []
@@ -96,7 +92,7 @@ function init(config) {
     create: (opts) => {
       const messageMap = createMessageMap(opts.receiverMessages);
       return {
-        _schema: {},
+        schema: {},
         ...config.adapter.create(messageMap)
       };
     }
@@ -118,37 +114,70 @@ function handleContext(message) {
 }
 
 // ../server/src/adapters/socks.ts
-function createSocksAdapter(config) {
+function createSocksAdapter({ token }) {
+  const apiURL = new URL("https://d2cq53hdb52m3c.cloudfront.net");
   return {
-    to(wid, data) {
+    async to(wid, data) {
+      const toUrl = new URL("/to", apiURL);
+      await fetch(toUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ token, wid, data })
+      });
     },
-    toRoom(rid, data) {
+    async toRoom(rid, data) {
+      const toRoomUrl = new URL("/to-room", apiURL);
+      await fetch(toRoomUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ token, rid, data })
+      });
     },
     async broadcast(data) {
-      console.log("Broadcasting", data);
-      await fetch(
-        "https://i7665hzd84.execute-api.eu-central-1.amazonaws.com/service/broadcast",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            token: config.token,
-            data
-          })
-        }
-      );
-      console.log("Broadcasted");
+      const broadcastUrl = new URL("/broadcast", apiURL);
+      await fetch(broadcastUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ token, data })
+      });
     },
-    join(wid, rid) {
+    async join(wid, rid) {
+      const joinUrl = new URL("/join", apiURL);
+      await fetch(joinUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ token, wid, rid })
+      });
     },
-    leave(wid, rid) {
+    async leave(wid, rid) {
+      const leaveUrl = new URL("/leave", apiURL);
+      await fetch(leaveUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ token, wid, rid })
+      });
     },
     create(messageMap) {
       const handler2 = async (event, context) => {
         const { wid, data } = event;
-        const { type, payload } = data;
-        const message = messageMap.get(type);
+        const message = messageMap.get(data.type);
         if (!message) {
-          throw new Error(`Unknown message type: ${type}`);
+          throw new Error(`Unknown message type: ${data.type}`);
         }
         await handleMessage(message, data, wid);
       };
@@ -3906,10 +3935,11 @@ var receiver = s.receiver.messages({
     await sender.test("Server sending message! " + payload).broadcast();
   })
 });
-var handler = s.create({
+var server = s.create({
   receiverMessages: receiver,
   senderMessages: sender
-}).handler;
+});
+var handler = server.handler;
 export {
   handler
 };
