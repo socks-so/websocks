@@ -9,8 +9,9 @@ type ClientContext<TSocks extends AnySocksType> = {
   send: DecorateReceiverMessageRecord<TSocks["receiverMessages"]>;
   on: DecorateSenderMessageRecord<TSocks["senderMessages"]>;
 };
-
-const SocksContext = createContext<ClientContext<AnySocksType>>({} as any);
+const SocksContext = createContext<ClientContext<AnySocksType> | undefined>(
+  undefined
+);
 
 export const SocksProvider = <TSocks extends AnySocksType>({
   children,
@@ -25,5 +26,9 @@ export const SocksProvider = <TSocks extends AnySocksType>({
 };
 
 export const useWebsocks = <TSocks extends AnySocksType>() => {
-  return useContext(SocksContext) as ClientContext<TSocks>;
+  const context = useContext(SocksContext);
+  if (!context) {
+    throw new Error("useWebsocks must be used within a SocksProvider");
+  }
+  return context as ClientContext<TSocks>;
 };
