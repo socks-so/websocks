@@ -2,7 +2,7 @@ import { describe, test } from "vitest";
 
 import { init } from "../../server/src/index";
 
-import { client } from "../../client/src/node/index";
+import { createClient } from "../../client/src/node";
 import { createNodeAdapter } from "../../server/src/adapters/node";
 
 import { z } from "zod";
@@ -76,10 +76,10 @@ describe("integration test", () => {
       senderMessages: sender,
     });
 
-    type schema = (typeof server)["schema"];
+    type Schema = (typeof server)["schema"];
 
-    const cli1 = client<schema>("ws://localhost:8080");
-    const cli2 = client<schema>("ws://localhost:8080");
+    const cli1 = createClient<Schema>("ws://localhost:8080");
+    const cli2 = createClient<Schema>("ws://localhost:8080");
 
     cli1.on.test2(({ payload }) => {});
 
