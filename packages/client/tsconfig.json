@@ -3,7 +3,8 @@
   "compilerOptions": {
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "lib": ["ESNext", "DOM"]
+    "lib": ["ESNext", "DOM"],
+    "jsx": "react-jsx"
   },
-  "include": ["src"]
+  "include": ["src", "test/server.ts"]
 }

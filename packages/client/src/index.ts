@@ -45,5 +45,12 @@ export const createRawClient = <TSocks extends AnySocksType>(
       const handler = input as (payload: unknown) => void;
       emitter.on(pathString, handler);
     }
+<<<<<<< HEAD
   }, []) as Client<TSocks>;
+=======
+  }, []) as {
+    send: DecorateReceiverMessageRecord<TSocks["receiverMessages"]>;
+    on: DecorateSenderMessageRecord<TSocks["senderMessages"]>;
+  };
+>>>>>>> 44c59e03f201882b189068391a19129617b08733
 };
