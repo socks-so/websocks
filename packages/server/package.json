@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "vitest",
     "typecheck": "echo no typecheck",
-    "build": "tsup src/index.ts src/adapters/node.ts src/adapters/bun.ts src/adapters/socks.ts --format cjs,esm --dts --sourcemap --clean --target=node18",
+    "build": "tsup",
     "test": "vitest run",
     "release": "changesets publish"
   },
@@ -34,21 +34,5 @@
   "dependencies": {
     "ws": "^8.14.2",
     "zod": "^3.22.4"
-  },
-  "exports": {
-    ".": {
-      "node": "./dist/index.js",
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "default": "./dist/index.js"
-    },
-    "./adapters/node": {
-      "node": "./dist/adapters/node.js",
-      "types": "./dist/adapters/node.d.ts",
-      "import": "./dist/adapters/node.mjs",
-      "require": "./dist/adapters/node.js",
-      "default": "./dist/adapters/node.js"
-    }
   }
 }

@@ -1,12 +1,18 @@
-import { describe, it, expect } from "vitest";
+import { describe, it } from "vitest";
 
-import { client } from "../src/index";
+import { createClient } from "../src/node";
 import { init } from "../../server/src/index";
+import { createNodeAdapter } from "../../server/src/adapters/node";
 import z from "zod";
+import { WebSocketServer } from "ws";
 
 describe("client", () => {
   it("should work", () => {
-    const s = init({ header: z.string(), context: () => {} });
+    const s = init({
+      headers: z.string(),
+      context: () => {},
+      adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
+    });
 
     const receiver = s.receiver.messages({
       test: s.receiver
@@ -26,9 +32,9 @@ describe("client", () => {
       senderMessages: sender,
     });
 
-    type schema = (typeof server)["_schema"];
+    type Schema = typeof server.schema;
 
-    const cli = client<schema>("ws://localhost:8080");
+    const cli = createClient<Schema>("ws://localhost:8080");
 
     cli.on.test((payload) => {
       console.log(payload);

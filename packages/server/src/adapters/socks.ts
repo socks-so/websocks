@@ -14,7 +14,7 @@ interface Event {
 }
 
 export function createSocksAdapter({ token }: SocksAdapterConfig) {
-  const apiURL = new URL("https://d2cq53hdb52m3c.cloudfront.net");
+  const apiURL = new URL("https://d2epond2a8mpsm.cloudfront.net");
 
   return {
     async to(wid: string, data: unknown) {
@@ -43,6 +43,7 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
 
     async broadcast(data: unknown) {
       const broadcastUrl = new URL("/broadcast", apiURL);
+      const p0 = performance.now();
       await fetch(broadcastUrl, {
         method: "POST",
         headers: {
@@ -51,6 +52,8 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
         },
         body: JSON.stringify({ token, data }),
       });
+      const p1 = performance.now();
+      console.log("broadcast time", p1 - p0);
     },
 
     async join(wid: string, rid: string) {

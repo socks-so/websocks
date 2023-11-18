@@ -115,7 +115,7 @@ function handleContext(message) {
 
 // ../server/src/adapters/socks.ts
 function createSocksAdapter({ token }) {
-  const apiURL = new URL("https://d2cq53hdb52m3c.cloudfront.net");
+  const apiURL = new URL("https://d2epond2a8mpsm.cloudfront.net");
   return {
     async to(wid, data) {
       const toUrl = new URL("/to", apiURL);
@@ -141,6 +141,7 @@ function createSocksAdapter({ token }) {
     },
     async broadcast(data) {
       const broadcastUrl = new URL("/broadcast", apiURL);
+      const p0 = performance.now();
       await fetch(broadcastUrl, {
         method: "POST",
         headers: {
@@ -149,6 +150,8 @@ function createSocksAdapter({ token }) {
         },
         body: JSON.stringify({ token, data })
       });
+      const p1 = performance.now();
+      console.log("broadcast time", p1 - p0);
     },
     async join(wid, rid) {
       const joinUrl = new URL("/join", apiURL);

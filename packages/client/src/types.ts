@@ -22,7 +22,7 @@ export type InferReceiverMessagePayload<T> = T extends ReceiverMessage<
   : never;
 
 export type DecorateReceiverMessage<
-  T extends ReceiverMessage<AnyContext, AnyHeader>,
+  T extends ReceiverMessage<AnyContext, AnyHeader>
 > = (payload: InferReceiverMessagePayload<T>) => void;
 
 export type DecorateReceiverMessageRecord<TRecord> =
@@ -48,11 +48,9 @@ export type InferSenderMessagePayload<T> = T extends SenderMessage<
 export type AnySenderMessage = SenderMessage<AnyPayload>;
 
 export type DecorateSenderMessage<
-  TSenderMessage extends SenderMessage<AnyPayload>,
+  TSenderMessage extends SenderMessage<AnyPayload>
 > = (
-  handler: (args: {
-    payload: InferSenderMessagePayload<TSenderMessage>;
-  }) => void
+  handler: (args: { payload: InferSenderMessagePayload<TSenderMessage> }) => any
 ) => void;
 
 export type DecorateSenderMessageRecord<TRecord> =
@@ -64,7 +62,12 @@ export type DecorateSenderMessageRecord<TRecord> =
           ? DecorateSenderMessageRecord<TRecord[K]>
           : never;
       } & {
-        open: (handler: () => void) => void; //temporary for utility events
-        close: (handler: () => void) => void;
+        open: (handler: () => any) => void; //temporary for utility events
+        close: (handler: () => any) => void;
       }
     : never;
+
+export type Client<TSocks extends AnySocksType> = {
+  send: DecorateReceiverMessageRecord<TSocks["receiverMessages"]>;
+  on: DecorateSenderMessageRecord<TSocks["senderMessages"]>;
+};

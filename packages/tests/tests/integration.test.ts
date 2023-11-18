@@ -28,17 +28,29 @@ describe("integration test", () => {
       return ctx;
     });
 
+    class Point {
+      constructor() {
+        this.x = 0;
+        this.y = 0;
+      }
+      x: number;
+      y: number;
+    }
+
     const sender = s.sender.messages({
       test: s.sender.message().payload(z.string()),
+      test2: s.sender
+        .message()
+        .payload(z.object({ x: z.number(), y: z.number() })),
     });
 
     const receiver = s.receiver.messages({
       test: s.receiver
         .message()
         .payload(z.string())
-        .on(({ wid, payload }) => {
+        .on(({ payload }) => {
           console.log("[SERVER]: received test message, payload:" + payload);
-          sender.test("Hi from server").toRoom("test");
+          sender.test2({ x: 2, y: 3 }).toRoom("test");
         }),
       betterTest: betterReceiver
         .message()
@@ -68,6 +80,8 @@ describe("integration test", () => {
 
     const cli1 = client<schema>("ws://localhost:8080");
     const cli2 = client<schema>("ws://localhost:8080");
+
+    cli1.on.test2(({ payload }) => {});
 
     cli1.on.test(({ payload }) => {
       console.log("[CLIENT 1]: received test message, payload:" + payload);

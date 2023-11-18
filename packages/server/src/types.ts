@@ -1,4 +1,4 @@
-// temporarily for TPayload
+// temporarily for TPayload but not used yet
 type JsonPrimitive = string | number | boolean | null;
 
 type JsonMap = {
@@ -8,6 +8,7 @@ type JsonMap = {
 type JsonArray = Array<JsonPrimitive | JsonMap | JsonArray>;
 
 export type JsonSerializable = JsonPrimitive | JsonMap | JsonArray;
+//
 
 import { z } from "zod";
 import { Adapter } from "./adapters/types";
@@ -23,6 +24,7 @@ export type TConfig<
   TContext extends AnyContext,
   TAdapter extends Adapter
 > = {
+  headers?: z.Schema<THeader>;
   connect?: ConnectFn<THeader, TContext>;
   context?: ContextFn<TContext>;
   adapter: TAdapter;
