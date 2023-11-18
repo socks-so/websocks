@@ -2,16 +2,19 @@ import mitt from "mitt";
 
 import { createRecursiveProxy } from "./proxy";
 
-import { AnySocksType, Client } from "./types";
+import { AnySocksType, Client, InferHeader } from "./types";
 
 export const createRawClient = <TSocks extends AnySocksType>(
-  socket: WebSocket
+  socket: WebSocket,
+  opts?: { header: InferHeader<TSocks> }
 ) => {
   const emitter = mitt();
 
   socket.onopen = () => {
     console.log("connected to websocket server");
     emitter.emit("open");
+
+    //should send connection messages with headers first but still TODO
   };
 
   socket.onmessage = (event) => {

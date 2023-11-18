@@ -24,7 +24,7 @@ export type TConfig<
   TContext extends AnyContext,
   TAdapter extends Adapter
 > = {
-  headers?: z.Schema<THeader>;
+  header?: z.Schema<THeader>;
   connect?: ConnectFn<THeader, TContext>;
   context?: ContextFn<TContext>;
   adapter: TAdapter;
@@ -188,7 +188,8 @@ export type AnyReceiverMessage = ReceiverMessage<AnyContext, AnyPayload>;
 
 export type SocksType<
   TReceiverMessages extends ReceiverMessageRecord,
-  TSenderMessgages extends SenderMessageRecord
+  TSenderMessgages extends SenderMessageRecord,
+  THeader extends AnyHeader
 > = {
   receiverMessages: TReceiverMessages;
   senderMessages: TSenderMessgages;

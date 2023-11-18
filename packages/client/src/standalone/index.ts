@@ -1,9 +1,12 @@
 import { createRawClient } from "..";
 
-import { AnySocksType } from "../types";
+import { AnySocksType, InferHeader } from "../types";
 
-export function createClient<TSocks extends AnySocksType>(url: string) {
+export function createClient<TSocks extends AnySocksType>(
+  url: string,
+  opts?: { header: InferHeader<TSocks> }
+) {
   const socket = new WebSocket(url);
 
-  return createRawClient<TSocks>(socket);
+  return createRawClient<TSocks>(socket, opts);
 }

@@ -11,7 +11,8 @@ import {
 
 export type AnySocksType = SocksType<
   ReceiverMessageRecord,
-  SenderMessageRecord
+  SenderMessageRecord,
+  AnyHeader
 >;
 
 export type InferReceiverMessagePayload<T> = T extends ReceiverMessage<
@@ -66,6 +67,14 @@ export type DecorateSenderMessageRecord<TRecord> =
         close: (handler: () => any) => void;
       }
     : never;
+
+export type InferHeader<T> = T extends SocksType<
+  ReceiverMessageRecord,
+  SenderMessageRecord,
+  infer THeader
+>
+  ? THeader
+  : never;
 
 export type Client<TSocks extends AnySocksType> = {
   send: DecorateReceiverMessageRecord<TSocks["receiverMessages"]>;

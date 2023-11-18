@@ -9,7 +9,6 @@ import { WebSocketServer } from "ws";
 describe("client", () => {
   it("should work", () => {
     const s = init({
-      headers: z.string(),
       context: () => {},
       adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
     });
