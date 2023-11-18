@@ -20,7 +20,7 @@ type GetDeployStatus = {
 let tries = 0;
 
 export async function deploy(token: string, path: string) {
-  const apiUrl = "https://azdhfdjxpl.execute-api.eu-central-1.amazonaws.com";
+  const apiUrl = "dev.api.socks.so";
   const requestUrl = apiUrl + "/getUrl";
   const statusUrl = apiUrl + "/uploadStatus";
 
