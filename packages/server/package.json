@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "vitest",
-    "typecheck": "echo no typecheck",
+    "typecheck": "tsc --noEmit",
     "build": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
     "test": "vitest run",
     "release": "changesets publish ./dist"

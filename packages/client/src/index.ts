@@ -2,9 +2,9 @@ import mitt from "mitt";
 
 import { createRecursiveProxy } from "./proxy";
 
-import { AnySocksType, Client, InferHeader } from "./types";
+import { AnySchema, Client, InferHeader } from "./types";
 
-export const createRawClient = <TSocks extends AnySocksType>(
+export const createRawClient = <TSocks extends AnySchema>(
   socket: WebSocket,
   opts?: { header: InferHeader<TSocks> }
 ) => {

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "ts-node src/socks.ts",
     "dev": "nodemon --exec ts-node src/socks.ts",
+    "typecheck": "tsc --noEmit",
     "build": "esbuild test.ts --bundle --format=esm --outfile=test.mjs"
   },
   "devDependencies": {

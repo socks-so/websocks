@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { createReactHooks } from "../src/react";
 import { createClient } from "../src/standalone";
 
+import type { Schema } from "./server";
+
 const { SocksProvider, useWebsocks } = createReactHooks(
-  createClient("ws://localhost:3000")
+  createClient<Schema>("ws://localhost:3000")
 );
 
 export const Main = () => {

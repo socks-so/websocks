@@ -1,5 +1,4 @@
-import { describe, it, expect, assertType } from "vitest";
-import z from "zod";
+import { describe, it } from "vitest";
 
 describe("client types", () => {
   it("no type errors", () => {});
