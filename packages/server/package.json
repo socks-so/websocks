@@ -21,10 +21,6 @@
     "test": "vitest run",
     "release": "changesets publish ./dist"
   },
-  "exports": {
-    "./*": "./*",
-    "./adapters/node": "./adapters/node/index.js"
-  },
   "peerDependencies": {
     "ws": "^8.14.2",
     "zod": "^3.22.2"

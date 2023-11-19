@@ -7,10 +7,14 @@
   "keywords": [],
   "author": "Liudvikas Zekas, Rahul Singh",
   "license": "MIT",
+  "publishConfig": {
+    "directory": "dist",
+    "access": "public"
+  },
   "scripts": {
     "dev": "vitest --browser.name=firefox --browser.headless=true",
     "typecheck": "tsc --noEmit",
-    "build": "tsup",
+    "build": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
     "test": "echo no testing of client!",
     "release": "changesets publish"
   },

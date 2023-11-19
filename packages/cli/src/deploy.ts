@@ -1,6 +1,8 @@
 import { PresignedPost } from "@aws-sdk/s3-presigned-post";
 import fs from "fs";
 
+import esbuild from "esbuild";
+
 type GetUrlSuccess = {
   status: number;
   body: {
@@ -98,8 +100,15 @@ async function checkStatus(url: string, functionName: string) {
 }
 
 function buildFile(path: string) {
+  esbuild.buildSync({
+    entryPoints: [path + "test.ts"],
+    bundle: true,
+    format: "esm",
+    outfile: path + "test.mjs",
+  });
   const file = fs.readFileSync(path + "test.mjs");
-  const blob = new Blob([file], { type: "text/plain" });
+
+  const blob = new Blob([file], { type: "text/javascript" });
   return blob;
 }
 
