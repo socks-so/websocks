@@ -6,8 +6,8 @@ export default defineConfig((options) => {
     minify: true,
     entry: [
       "./src/index.ts",
-      "./src/adapters/node.ts",
-      "./src/adapters/socks.ts",
+      "./src/adapters/node/index.ts",
+      "./src/adapters/socks/index.ts",
     ],
     splitting: true,
     sourcemap: false,
