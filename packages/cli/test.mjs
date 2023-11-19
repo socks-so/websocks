@@ -115,7 +115,7 @@ function handleContext(message) {
 
 // ../server/src/adapters/socks.ts
 function createSocksAdapter({ token }) {
-  const apiURL = new URL("https://d2epond2a8mpsm.cloudfront.net");
+  const apiURL = new URL("https://cotton.socks.so");
   return {
     async to(wid, data) {
       const toUrl = new URL("/to", apiURL);

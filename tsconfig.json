@@ -5,6 +5,9 @@
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@websocks/server": ["packages/server/src"],
+      "@websocks/client": ["packages/client/src"]
+    }
   }
 }
