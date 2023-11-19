@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.2.12
+
+### Patch Changes
+
+- patch
+
 ## 0.2.11
 
 ### Patch Changes

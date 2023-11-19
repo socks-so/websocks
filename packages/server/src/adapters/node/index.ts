@@ -14,7 +14,7 @@ export function createNodeAdapter(wss: WebSocketServer) {
 
   return {
     async to(wid, data) {
-      widToClient.get(wid)?.send(data);
+      widToClient.get(wid)?.send(JSON.stringify(data));
     },
 
     async toRoom(rid, data) {
@@ -24,8 +24,9 @@ export function createNodeAdapter(wss: WebSocketServer) {
     },
 
     async broadcast(data) {
+      console.log(data);
       for (const ws of clientToWid.keys()) {
-        ws.send(data);
+        ws.send(JSON.stringify(data));
       }
     },
 
