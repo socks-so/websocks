@@ -1,8 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 
-import { createReactHooks } from "../src/react";
-import { createClient } from "../src/standalone";
+import { createReactHooks, createClient } from "../src/react";
 
 import type { Schema } from "./server";
 

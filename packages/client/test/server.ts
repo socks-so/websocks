@@ -7,7 +7,7 @@ const ws = new WebSocketServer({ port: 8080 });
 
 const s = init({
   context: () => ({}),
-  adapter: createNodeAdapter(ws)
+  adapter: createNodeAdapter(ws),
 });
 
 const sender = s.sender.messages({

@@ -1,9 +1,9 @@
 import { WebSocketServer, WebSocket, RawData } from "ws";
 import { randomUUID } from "crypto";
 
-import { handleMessage } from "../message-handler";
-import { Adapter } from "./types";
-import { Message } from "../message";
+import { handleMessage } from "../../message-handler";
+import { Adapter } from "../types";
+import { Message } from "../../message";
 
 export function createNodeAdapter(wss: WebSocketServer) {
   const clientToWid = new Map<WebSocket, string>();

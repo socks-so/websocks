@@ -1,4 +1,6 @@
 import { createContext, useContext } from "react";
+import { createClient } from "../standalone";
+
 import { AnySchema, Client } from "../types";
 
 export const createReactHooks = <Schema extends AnySchema>(
@@ -18,3 +20,5 @@ export const createReactHooks = <Schema extends AnySchema>(
     },
   };
 };
+
+export { createClient };

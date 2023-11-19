@@ -1,7 +1,7 @@
 import { Handler } from "aws-lambda";
 
-import { handleMessage } from "../message-handler";
-import { Adapter } from "./types";
+import { handleMessage } from "../../message-handler";
+import { Adapter } from "../types";
 
 interface SocksAdapterConfig {
   token: string;
