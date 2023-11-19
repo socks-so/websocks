@@ -6,7 +6,7 @@ export default defineConfig((options) => {
     minify: true,
     entry: [
       "./src/node/index.ts",
-      "./src/react/index.ts",
+      "./src/react/index.tsx",
       "./src/standalone/index.ts",
     ],
     splitting: true,
