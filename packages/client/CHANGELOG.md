@@ -1,5 +1,11 @@
 # @websocks/client
 
+## 0.2.3
+
+### Patch Changes
+
+- added experimental react support
+
 ## 0.2.2
 
 ### Patch Changes
