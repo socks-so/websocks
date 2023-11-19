@@ -22,7 +22,7 @@ export type AnyAdapter = Adapter;
 export type TConfig<
   THeader extends AnyHeader,
   TContext extends AnyContext,
-  TAdapter extends Adapter
+  TAdapter extends Adapter,
 > = {
   header?: z.Schema<THeader>;
   connect?: ConnectFn<THeader, TContext>;
@@ -50,8 +50,8 @@ export type InferSchemaReceiverMessageRecord<T> =
         [K in keyof T]: T[K] extends ReceiverMessage<AnyContext, AnyPayload>
           ? InferSchemaReceiverMessage<T[K]>
           : T[K] extends ReceiverMessageRecord
-          ? InferSchemaReceiverMessageRecord<T[K]>
-          : never;
+            ? InferSchemaReceiverMessageRecord<T[K]>
+            : never;
       }
     : never;
 
@@ -64,8 +64,8 @@ export type InferReceiverMessageRecord<T> =
         >
           ? InferReceiverMessage<T[K]>
           : T[K] extends SchemaReceiverMessageRecord
-          ? InferReceiverMessageRecord<T[K]>
-          : never;
+            ? InferReceiverMessageRecord<T[K]>
+            : never;
       }
     : never;
 
@@ -84,8 +84,8 @@ export type InferSchemaSenderMessageRecord<T> = T extends SenderMessageRecord
       [K in keyof T]: T[K] extends SenderMessage<AnyPayload>
         ? InferSchemaSenderMessage<T[K]>
         : T[K] extends SenderMessageRecord
-        ? InferSchemaSenderMessageRecord<T[K]>
-        : never;
+          ? InferSchemaSenderMessageRecord<T[K]>
+          : never;
     }
   : never;
 
@@ -96,8 +96,8 @@ export type InferSenderMessageRecord<T> = T extends SchemaSenderMessageRecord<
       [K in keyof T]: T[K] extends SchemaSenderMessage<AnyPayload>
         ? InferSenderMessage<T[K]>
         : T[K] extends SchemaSenderMessageRecord<THeader>
-        ? InferSenderMessageRecord<T[K]>
-        : never;
+          ? InferSenderMessageRecord<T[K]>
+          : never;
     }
   : never;
 
@@ -186,10 +186,10 @@ export type ReceiverMessage<TContext, TPayload> = {
 
 export type AnyReceiverMessage = ReceiverMessage<AnyContext, AnyPayload>;
 
-export type SocksType<
+export type Schema<
   TReceiverMessages extends ReceiverMessageRecord,
   TSenderMessgages extends SenderMessageRecord,
-  THeader extends AnyHeader
+  THeader extends AnyHeader,
 > = {
   receiverMessages: TReceiverMessages;
   senderMessages: TSenderMessgages;

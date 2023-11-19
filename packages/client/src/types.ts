@@ -6,10 +6,10 @@ import {
   ReceiverMessageRecord,
   SenderMessage,
   SenderMessageRecord,
-  SocksType,
+  Schema,
 } from "../../server/src/types";
 
-export type AnySocksType = SocksType<
+export type AnySchema = Schema<
   ReceiverMessageRecord,
   SenderMessageRecord,
   AnyHeader
@@ -23,7 +23,7 @@ export type InferReceiverMessagePayload<T> = T extends ReceiverMessage<
   : never;
 
 export type DecorateReceiverMessage<
-  T extends ReceiverMessage<AnyContext, AnyHeader>
+  T extends ReceiverMessage<AnyContext, AnyHeader>,
 > = (payload: InferReceiverMessagePayload<T>) => void;
 
 export type DecorateReceiverMessageRecord<TRecord> =
@@ -35,8 +35,8 @@ export type DecorateReceiverMessageRecord<TRecord> =
         >
           ? DecorateReceiverMessage<TRecord[K]>
           : TRecord[K] extends ReceiverMessageRecord
-          ? DecorateReceiverMessageRecord<TRecord[K]>
-          : never;
+            ? DecorateReceiverMessageRecord<TRecord[K]>
+            : never;
       }
     : never;
 
@@ -49,7 +49,7 @@ export type InferSenderMessagePayload<T> = T extends SenderMessage<
 export type AnySenderMessage = SenderMessage<AnyPayload>;
 
 export type DecorateSenderMessage<
-  TSenderMessage extends SenderMessage<AnyPayload>
+  TSenderMessage extends SenderMessage<AnyPayload>,
 > = (
   handler: (args: { payload: InferSenderMessagePayload<TSenderMessage> }) => any
 ) => void;
@@ -60,15 +60,15 @@ export type DecorateSenderMessageRecord<TRecord> =
         [K in keyof TRecord]: TRecord[K] extends SenderMessage<AnyPayload>
           ? DecorateSenderMessage<TRecord[K]>
           : TRecord[K] extends SenderMessageRecord
-          ? DecorateSenderMessageRecord<TRecord[K]>
-          : never;
+            ? DecorateSenderMessageRecord<TRecord[K]>
+            : never;
       } & {
         open: (handler: () => any) => void; //temporary for utility events
         close: (handler: () => any) => void;
       }
     : never;
 
-export type InferHeader<T> = T extends SocksType<
+export type InferHeader<T> = T extends Schema<
   ReceiverMessageRecord,
   SenderMessageRecord,
   infer THeader
@@ -76,7 +76,7 @@ export type InferHeader<T> = T extends SocksType<
   ? THeader
   : never;
 
-export type Client<TSocks extends AnySocksType> = {
-  send: DecorateReceiverMessageRecord<TSocks["receiverMessages"]>;
-  on: DecorateSenderMessageRecord<TSocks["senderMessages"]>;
+export type Client<Schema extends AnySchema> = {
+  send: DecorateReceiverMessageRecord<Schema["receiverMessages"]>;
+  on: DecorateSenderMessageRecord<Schema["senderMessages"]>;
 };

@@ -1,15 +1,16 @@
 import React from "react";
 import { useState, useEffect } from "react";
 
-import { Schema } from "./server";
 import { createReactHooks } from "../src/react";
 import { createClient } from "../src/standalone";
 
-const { SocksProvider, useWebsocks } = createReactHooks<Schema>();
+const { SocksProvider, useWebsocks } = createReactHooks(
+  createClient("ws://localhost:3000")
+);
 
 export const Main = () => {
   return (
-    <SocksProvider client={createClient<Schema>("ws://localhost:3000")}>
+    <SocksProvider>
       <TestComponent />
     </SocksProvider>
   );
