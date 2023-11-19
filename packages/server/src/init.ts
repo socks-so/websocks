@@ -67,16 +67,14 @@ export const createSenderFactory = <THeader, TAdapter extends Adapter>(
 
       return {
         _tag: "sender",
-        to: (wid: string) => {
-          adapter.to(wid, JSON.stringify({ type: pathString, payload }));
+        to: async (wid: string) => {
+          await adapter.to(wid, { type: pathString, payload });
         },
-        toRoom: (rid: string) => {
-          adapter.toRoom(rid, JSON.stringify({ type: pathString, payload }));
+        toRoom: async (rid: string) => {
+          await adapter.toRoom(rid, { type: pathString, payload });
         },
         broadcast: async () => {
-          await adapter.broadcast(
-            JSON.stringify({ type: pathString, payload })
-          );
+          await adapter.broadcast({ type: pathString, payload });
         },
       };
     }, []) as any as InferSenderMessageRecord<TMessages>;

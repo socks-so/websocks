@@ -34,19 +34,24 @@ export const createRawClient = <TSocks extends AnySchema>(
 
   return createRecursiveProxy(async (opts) => {
     const path = [...opts.path];
-    const method = path.shift()! as "send" | "on";
+    const method = path.shift()! as "send" | "on" | "off";
     const pathString = path.join(".");
     const [input] = opts.args;
 
     if (method === "send") {
       const payload = input;
-      console.log("sending", { type: pathString, payload });
       socket.send(JSON.stringify({ type: pathString, payload }));
     }
 
     if (method === "on") {
       const handler = input as (payload: unknown) => void;
       emitter.on(pathString, handler);
+    }
+
+    //* not implemented yet //
+    if (method === "off") {
+      const handler = input as (payload: unknown) => void;
+      emitter.off(pathString, handler);
     }
   }, []) as Client<TSocks>;
 };

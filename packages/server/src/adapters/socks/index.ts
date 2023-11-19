@@ -17,7 +17,7 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
   const apiURL = new URL("https://cotton.socks.so");
 
   return {
-    async to(wid: string, data: unknown) {
+    async to(wid, data) {
       const toUrl = new URL("/to", apiURL);
       await fetch(toUrl, {
         method: "POST",
@@ -29,7 +29,7 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
       });
     },
 
-    async toRoom(rid: string, data: unknown) {
+    async toRoom(rid, data) {
       const toRoomUrl = new URL("/to-room", apiURL);
       await fetch(toRoomUrl, {
         method: "POST",
@@ -41,7 +41,7 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
       });
     },
 
-    async broadcast(data: unknown) {
+    async broadcast(data) {
       const broadcastUrl = new URL("/broadcast", apiURL);
       const p0 = performance.now();
       await fetch(broadcastUrl, {
@@ -56,7 +56,7 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
       console.log("broadcast time", p1 - p0);
     },
 
-    async join(wid: string, rid: string) {
+    async join(wid, rid) {
       const joinUrl = new URL("/join", apiURL);
       await fetch(joinUrl, {
         method: "POST",
@@ -68,7 +68,7 @@ export function createSocksAdapter({ token }: SocksAdapterConfig) {
       });
     },
 
-    async leave(wid: string, rid: string) {
+    async leave(wid, rid) {
       const leaveUrl = new URL("/leave", apiURL);
       await fetch(leaveUrl, {
         method: "POST",

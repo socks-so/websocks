@@ -1,5 +1,11 @@
 # @websocks/client
 
+## 0.2.5
+
+### Patch Changes
+
+- final react patch
+
 ## 0.2.4
 
 ### Patch Changes

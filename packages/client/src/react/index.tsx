@@ -15,9 +15,7 @@ export const createReactHooks = <Schema extends AnySchema>(
       );
     },
 
-    useWebsocks: () => {
-      return useContext(SocksContext);
-    },
+    useWebsocks: () => useContext(SocksContext),
   };
 };
 

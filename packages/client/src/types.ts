@@ -51,7 +51,7 @@ export type AnySenderMessage = SenderMessage<AnyPayload>;
 export type DecorateSenderMessage<
   TSenderMessage extends SenderMessage<AnyPayload>,
 > = (
-  handler: (args: { payload: InferSenderMessagePayload<TSenderMessage> }) => any
+  handler: (payload: InferSenderMessagePayload<TSenderMessage>) => any
 ) => void;
 
 export type DecorateSenderMessageRecord<TRecord> =
