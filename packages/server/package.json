@@ -17,14 +17,13 @@
   "scripts": {
     "dev": "vitest",
     "typecheck": "tsc --noEmit",
-    "build": "tsup",
+    "build": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
     "test": "vitest run",
     "release": "changesets publish ./dist"
   },
   "exports": {
     "./*": "./*",
-    "./adapters/node": "./adapters/node/index.js",
-    "./adapters/socks": "./adapters/socks/.js"
+    "./adapters/node": "./adapters/node/index.js"
   },
   "peerDependencies": {
     "ws": "^8.14.2",
