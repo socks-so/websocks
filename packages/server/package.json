@@ -1,6 +1,6 @@
 {
   "name": "@websocks/server",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
   "scripts": {
     "dev": "vitest",
     "typecheck": "echo no typecheck",
-    "build": "tsup",
+    "build": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
     "test": "vitest run",
     "release": "changesets publish"
   },

@@ -1,10 +1,10 @@
 import { describe, it } from "vitest";
+import { WebSocketServer } from "ws";
+import z from "zod";
 
 import { createClient } from "../src/node";
 import { init } from "../../server/src/index";
 import { createNodeAdapter } from "../../server/src/adapters/node";
-import z from "zod";
-import { WebSocketServer } from "ws";
 
 describe("client", () => {
   it("should work", () => {
