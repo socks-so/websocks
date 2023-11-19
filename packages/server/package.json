@@ -15,7 +15,7 @@
     "typecheck": "echo no typecheck",
     "build": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
     "test": "vitest run",
-    "release": "changesets publish"
+    "release": "changesets publish ./dist"
   },
   "peerDependencies": {
     "ws": "^8.14.2",
