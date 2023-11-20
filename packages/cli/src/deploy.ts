@@ -28,7 +28,7 @@ export async function deploy(token: string, path: string) {
 
   console.log("Building websocks...");
   const file = buildFile(path);
-  console.log("Building finished!");
+  console.log("Building finished...");
 
   console.log("Requesting upload URL...");
   const data = await fetchUrl(requestUrl, token);
