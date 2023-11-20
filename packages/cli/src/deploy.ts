@@ -22,9 +22,9 @@ type GetDeployStatus = {
 let tries = 0;
 
 export async function deploy(token: string, path: string) {
-  const apiUrl = "dev.api.socks.so";
-  const requestUrl = apiUrl + "/getUrl";
-  const statusUrl = apiUrl + "/uploadStatus";
+  const apiUrl = new URL("https://dev.api.socks.so");
+  const requestUrl = new URL("/getUrl", apiUrl);
+  const statusUrl = new URL("/uploadStatus", apiUrl);
 
   console.log("Building websocks...");
   const file = buildFile(path);
@@ -56,7 +56,7 @@ export async function deploy(token: string, path: string) {
   }
 }
 
-async function monitorDeployment(statusUrl: string, functionName: string) {
+async function monitorDeployment(statusUrl: URL, functionName: string) {
   tries++;
   if (tries > 20) {
     console.error(
@@ -81,7 +81,7 @@ async function monitorDeployment(statusUrl: string, functionName: string) {
   }, 1000);
 }
 
-async function checkStatus(url: string, functionName: string) {
+async function checkStatus(url: URL, functionName: string) {
   const deployStatus = await fetch(url, {
     method: "POST",
     body: JSON.stringify({
@@ -125,7 +125,7 @@ function uploadFile(presignedData: PresignedPost, file: Blob) {
 }
 
 async function fetchUrl(
-  url: string,
+  url: URL,
   token: string
 ): Promise<GetUrlError | GetUrlSuccess> {
   try {

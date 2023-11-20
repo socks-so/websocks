@@ -10,6 +10,7 @@
     "sockskit": "./index.js"
   },
   "scripts": {
+    "dev": "ts-node src/index.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/"
   },
