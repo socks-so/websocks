@@ -1,5 +1,11 @@
 # @websocks/client
 
+## 0.2.8
+
+### Patch Changes
+
+- some cleaning
+
 ## 0.2.7
 
 ### Patch Changes

@@ -1,4 +1,4 @@
-import type { Schema } from "../../cli/test";
+import type { Schema } from "./test";
 import { createClient } from "../../client/src/node";
 
 const cli = createClient<Schema>("wss://d3ofqvewhlynrt.cloudfront.net/discord");

@@ -1,5 +1,5 @@
-import { init } from "../server/src/index";
-import { createSocksAdapter } from "../server/src/adapters/socks";
+import { init } from "@websocks/server";
+import { createSocksAdapter } from "@websocks/server/adapters/socks";
 import { z } from "zod";
 
 const s = init({
