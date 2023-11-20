@@ -5,6 +5,7 @@ import { createRecursiveProxy } from "./proxy";
 import { AnySchema, Client, InferHeader } from "./types";
 
 export const createRawClient = <TSocks extends AnySchema>(
+  // @ts-ignore
   socket: WebSocket,
   opts?: { header: InferHeader<TSocks> }
 ) => {
@@ -17,6 +18,7 @@ export const createRawClient = <TSocks extends AnySchema>(
     //should send connection messages with headers first but still TODO
   };
 
+  // @ts-ignore
   socket.onmessage = (event) => {
     const { type, payload } = JSON.parse(event.data.toString());
     emitter.emit(type, payload);
@@ -27,6 +29,7 @@ export const createRawClient = <TSocks extends AnySchema>(
     emitter.emit("close");
   };
 
+  // @ts-ignore
   socket.onerror = (error) => {
     console.error(error);
     emitter.emit("error", error);

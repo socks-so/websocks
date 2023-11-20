@@ -9,7 +9,7 @@
       "@websocks/server": ["packages/server/src"],
       "@websocks/server/*": ["packages/server/src/*"],
       "@websocks/client": ["packages/client/src"],
-      "@websocks/client/*": ["packages/server/src/*"],
+      "@websocks/client/*": ["packages/client/src/*"],
       "@websocks/cli": ["packages/cli/src"],
       "@websocks/cli/*": ["packages/server/src/*"]
     }

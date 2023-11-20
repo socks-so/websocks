@@ -5,7 +5,7 @@ import { deployCommand } from "./commands/deploy";
 
 const program = new Command();
 
-program.name("socks").description("CLI to deploy a websocks server");
+program.name("sockskit").description("CLI to deploy a websocks server");
 deployCommand(program);
 
 program.parse(process.argv);
