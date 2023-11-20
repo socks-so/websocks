@@ -10,8 +10,6 @@
     "sockskit": "./index.js"
   },
   "scripts": {
-    "start": "ts-node src/socks.ts",
-    "dev": "nodemon --exec ts-node src/socks.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/"
   },
