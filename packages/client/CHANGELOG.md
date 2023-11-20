@@ -1,5 +1,11 @@
 # @websocks/client
 
+## 0.2.7
+
+### Patch Changes
+
+- fix service url
+
 ## 0.2.6
 
 ### Patch Changes
