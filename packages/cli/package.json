@@ -1,5 +1,5 @@
 {
-  "name": "@websocks/cli",
+  "name": "sockskit",
   "version": "0.0.2",
   "license": "MIT",
   "publishConfig": {
@@ -7,7 +7,7 @@
     "access": "public"
   },
   "bin": {
-    "socks": "./index.js"
+    "sockskit": "./index.js"
   },
   "scripts": {
     "start": "ts-node src/socks.ts",
