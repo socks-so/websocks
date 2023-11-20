@@ -1,14 +1,13 @@
 {
   "name": "@websocks/cli",
-  "version": "0.0.1",
-  "main": "index.js",
+  "version": "0.0.2",
   "license": "MIT",
   "publishConfig": {
     "directory": "dist",
     "access": "public"
   },
   "bin": {
-    "socks": "./dist/index.js"
+    "socks": "./index.js"
   },
   "scripts": {
     "start": "ts-node src/socks.ts",
