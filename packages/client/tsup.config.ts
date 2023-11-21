@@ -5,6 +5,7 @@ export default defineConfig((options) => {
     format: ["cjs", "esm"],
     minify: true,
     entry: [
+      "./src/index.ts",
       "./src/node/index.ts",
       "./src/react/index.tsx",
       "./src/standalone/index.ts",
