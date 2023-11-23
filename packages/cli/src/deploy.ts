@@ -101,12 +101,12 @@ async function checkStatus(url: URL, functionName: string) {
 
 function buildFile(path: string) {
   esbuild.buildSync({
-    entryPoints: [path + "test.ts"],
+    entryPoints: [path ? path : "./index.ts"],
     bundle: true,
     format: "esm",
-    outfile: path + "test.mjs",
+    outfile: path + "built.mjs",
   });
-  const file = fs.readFileSync(path + "test.mjs");
+  const file = fs.readFileSync(path + "built.mjs");
 
   const blob = new Blob([file], { type: "text/javascript" });
   return blob;
