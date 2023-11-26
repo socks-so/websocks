@@ -22,14 +22,15 @@ type GetDeployStatus = {
 let tries = 0;
 
 export async function deploy(path: string | undefined, token: string) {
-  console.log(path);
-  console.log(token);
   const apiUrl = new URL("https://dev.api.socks.so");
   const requestUrl = new URL("/getUrl", apiUrl);
   const statusUrl = new URL("/uploadStatus", apiUrl);
 
   console.log("Building websocks...");
   const file = buildFile(path);
+  if (!file) {
+    return;
+  }
   console.log("Building finished...");
 
   console.log("Requesting upload URL...");
@@ -102,15 +103,27 @@ async function checkStatus(url: URL, functionName: string) {
 }
 
 function buildFile(path: string | undefined) {
-  esbuild.buildSync({
+  const output = esbuild.buildSync({
     entryPoints: [path ? path : "./index.ts"],
     bundle: true,
     format: "esm",
-    outfile: path + "built.mjs",
+    write: false,
+    outdir: ".socks",
   });
-  const file = fs.readFileSync(path + "built.mjs");
 
-  const blob = new Blob([file], { type: "text/javascript" });
+  if (
+    output.errors.length > 0 ||
+    !output.outputFiles ||
+    output.outputFiles.length == 0 ||
+    !output.outputFiles[0]!.contents
+  ) {
+    console.error("Failed building file with errors: " + output.errors);
+    return;
+  }
+
+  const blob = new Blob([output.outputFiles[0]?.contents!], {
+    type: "text/javascript",
+  });
   return blob;
 }
 
