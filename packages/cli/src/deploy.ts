@@ -21,7 +21,9 @@ type GetDeployStatus = {
 
 let tries = 0;
 
-export async function deploy(token: string, path: string) {
+export async function deploy(path: string | undefined, token: string) {
+  console.log(path);
+  console.log(token);
   const apiUrl = new URL("https://dev.api.socks.so");
   const requestUrl = new URL("/getUrl", apiUrl);
   const statusUrl = new URL("/uploadStatus", apiUrl);
@@ -99,7 +101,7 @@ async function checkStatus(url: URL, functionName: string) {
   return data;
 }
 
-function buildFile(path: string) {
+function buildFile(path: string | undefined) {
   esbuild.buildSync({
     entryPoints: [path ? path : "./index.ts"],
     bundle: true,

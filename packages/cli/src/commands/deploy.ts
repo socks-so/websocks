@@ -4,10 +4,12 @@ import { deploy } from "../deploy";
 export function deployCommand(program: Command) {
   program
     .command("deploy")
+    .argument("[path]", "path to deploy")
     .requiredOption("-t, --token <token>", "token to deploy")
-    .option("-p, --path [path]", "path to deploy", "")
     .description("deploy a websocks server")
-    .action(async ({ token, path }) => {
-      await deploy(token, path);
+    .action(async (path, options) => {
+      console.log(options);
+      console.log(path);
+      await deploy(path, options.token);
     });
 }
