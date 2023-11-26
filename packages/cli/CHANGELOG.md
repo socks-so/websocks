@@ -1,5 +1,11 @@
 # @websocks/cli
 
+## 0.0.8
+
+### Patch Changes
+
+- built file not saved in file system
+
 ## 0.0.7
 
 ### Patch Changes
