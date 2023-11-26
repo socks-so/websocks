@@ -8,8 +8,6 @@ export function deployCommand(program: Command) {
     .requiredOption("-t, --token <token>", "token to deploy")
     .description("deploy a websocks server")
     .action(async (path, options) => {
-      console.log(options);
-      console.log(path);
       await deploy(path, options.token);
     });
 }
