@@ -1,3 +1,26 @@
 {
-  "extends": "../../tsconfig.json"
+  "display": "Node 18",
+
+  "_version": "18.2.0",
+
+  "compilerOptions": {
+    "lib": ["es2023"],
+    "module": "node16",
+    "target": "es2022",
+
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node16",
+    "baseUrl": ".",
+    "paths": {
+      "@websocks/server": ["../server/src"],
+      "@websocks/server/*": ["../server/src/*"],
+      "@websocks/client": ["../client/src"],
+      "@websocks/client/*": ["../client/src/*"],
+      "@websocks/cli": ["../cli/src"],
+      "@websocks/cli/*": ["../server/src/*"]
+    }
+  }
 }
