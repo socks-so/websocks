@@ -26,17 +26,15 @@ export type TConfig<
 > = {
   header?: z.Schema<THeader>;
   connect?: ConnectFn<THeader, TContext>;
-  context?: ContextFn<TContext>;
   adapter: TAdapter;
 };
 
 export type AnyConfig = TConfig<AnyHeader, AnyContext, AnyAdapter>;
 
-export type ConnectFn<THeader, TContext> = (opts: {
-  header: THeader;
-}) => TContext;
-
-export type ContextFn<TContext> = () => TContext;
+//experimental use of checking if THeader is unknown, not used anywhere else yet
+export type ConnectFn<THeader, TContext> = unknown extends THeader
+  ? () => TContext
+  : (header: THeader) => TContext;
 
 export type SchemaReceiverMessageRecord = {
   [key: string]:
@@ -121,8 +119,8 @@ export type InferSenderMessage<T> = T extends SchemaSenderMessage<
 
 export type SenderMessage<TPayload> = (payload: TPayload) => {
   _tag: "sender";
-  to: (wid: string) => void;
-  toRoom: (rid: string) => void;
+  to: (wid: string) => Promise<void>;
+  toRoom: (rid: string) => Promise<void>;
   broadcast: () => Promise<void>;
 };
 
@@ -161,21 +159,16 @@ export type Prettify<T> = {
 
 export type Merge<Object1, Object2> = Omit<Object1, keyof Object2> & Object2;
 
-/* unused because of typescript erros
-export type ReplaceUndefined<T, N> = Extract<T, undefined> extends never
-  ? T
-  : N | Exclude<T, undefined>;
+type t1 = { username?: string };
 
-export type NewContext<TContext, TNewContext> = Prettify<
-  TContext & TNewContext
->;
-*/
+type test = ReturnType<never>;
 
-export type ReceiverMessageHandlerFn<TContext, TPayload> = (opts: {
-  wid: string;
-  payload: TPayload;
-  context: TContext;
-}) => any;
+type m = Prettify<Merge<t1, test>>;
+
+export type ReceiverMessageHandlerFn<TContext, TPayload> =
+  TPayload extends undefined
+    ? (opts: { wid: string; context: TContext }) => any
+    : (opts: { wid: string; context: TContext; payload: TPayload }) => any;
 
 export type ReceiverMessage<TContext, TPayload> = {
   _tag: "receiver";

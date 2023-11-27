@@ -19,6 +19,7 @@ import {
   SenderMessageRecord,
   Schema,
   TConfig,
+  Merge,
 } from "./types";
 
 const createReceiverFactory = <THeader, TContext>(
@@ -50,7 +51,7 @@ const createReceiverFactory = <THeader, TContext>(
   ) =>
     createReceiverFactory<
       THeader,
-      Prettify<ReturnType<TMiddlewareFn>> //removed advanced merging because typescript error
+      Prettify<Merge<TContext, ReturnType<TMiddlewareFn>>>
     >([...middlewares, middleware]),
 });
 
@@ -115,9 +116,7 @@ export function init<THeader, TContext, TAdapter extends Adapter>(
       join: config.adapter.join,
       leave: config.adapter.leave,
     },
-    receiver: createReceiverFactory<THeader, TContext>(
-      config.context ? [config.context] : []
-    ),
+    receiver: createReceiverFactory<THeader, TContext>([]),
     sender: createSenderFactory<THeader, TAdapter>(config.adapter),
     create: <
       TReceiverMessages extends ReceiverMessageRecord,
