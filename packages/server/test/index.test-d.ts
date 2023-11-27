@@ -18,7 +18,7 @@ describe("server types", () => {
     };
 
     const s = init({
-      context: () => {
+      connect: () => {
         const db = fakeDB.connect();
         const user = null;
         return {
@@ -78,6 +78,5 @@ describe("server types", () => {
       receiverMessages: receives,
       senderMessages: sends,
     });
-    type SocksType = typeof socks;
   });
 });
