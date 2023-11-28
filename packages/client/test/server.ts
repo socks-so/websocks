@@ -6,7 +6,7 @@ import { WebSocketServer } from "ws";
 const ws = new WebSocketServer({ port: 8080 });
 
 const s = init({
-  context: () => ({}),
+  connect: () => ({}),
   adapter: createNodeAdapter(ws),
 });
 

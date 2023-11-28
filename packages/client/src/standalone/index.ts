@@ -1,12 +1,9 @@
 import { createRawClient } from "..";
 
-import { AnySchema, InferHeader } from "../types";
+import { AnySchema } from "../types";
 
-export function createClient<TSocks extends AnySchema>(
-  url: string,
-  opts?: { header: InferHeader<TSocks> }
-) {
+export function createClient<TSocks extends AnySchema>(url: string) {
   const socket = new WebSocket(url);
 
-  return createRawClient<TSocks>(socket, opts);
+  return createRawClient<TSocks>(socket);
 }

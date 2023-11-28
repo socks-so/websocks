@@ -79,4 +79,8 @@ export type InferHeader<T> = T extends Schema<
 export type Client<Schema extends AnySchema> = {
   send: DecorateReceiverMessageRecord<Schema["receiverMessages"]>;
   on: DecorateSenderMessageRecord<Schema["senderMessages"]>;
+  connect: unknown extends InferHeader<Schema>
+    ? () => void
+    : (header: InferHeader<Schema>) => void;
+  disconnect: () => void;
 };

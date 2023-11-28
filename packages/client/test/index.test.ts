@@ -9,7 +9,7 @@ import { createNodeAdapter } from "../../server/src/adapters/node";
 describe("client", () => {
   it("should work", () => {
     const s = init({
-      context: () => {},
+      connect: () => {},
       adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
     });
 
@@ -34,6 +34,8 @@ describe("client", () => {
     type Schema = typeof server.schema;
 
     const cli = createClient<Schema>("ws://localhost:8080");
+
+    cli.connect();
 
     cli.on.test((payload) => {
       console.log(payload);

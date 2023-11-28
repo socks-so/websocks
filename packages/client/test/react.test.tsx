@@ -22,7 +22,7 @@ export const TestComponent = () => {
   const client = useWebsocks();
 
   useEffect(() => {
-    client.on.test(({ payload }) => {
+    client.on.test((payload) => {
       setMessages((msgs) => [...msgs, payload]);
     });
   }, [client]);
