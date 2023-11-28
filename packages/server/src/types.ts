@@ -149,7 +149,7 @@ export type InferReceiverMessage<T> = T extends SchemaReceiverMessage<
   ? ReceiverMessage<TContext, TPayload>
   : never;
 
-export type MiddlewareFn<TContext> = (opts: { context: TContext }) => any;
+export type MiddlewareFn<TContext> = (context: TContext) => any;
 
 export type AnyMiddlewareFn = MiddlewareFn<AnyContext>;
 
@@ -159,21 +159,18 @@ export type Prettify<T> = {
 
 export type Merge<Object1, Object2> = Omit<Object1, keyof Object2> & Object2;
 
-type t1 = { username?: string };
-
-type test = ReturnType<never>;
-
-type m = Prettify<Merge<t1, test>>;
-
-export type ReceiverMessageHandlerFn<TContext, TPayload> =
-  TPayload extends undefined
+export type ReceiverMessageHandlerFn<TContext, TPayload> = TContext extends void
+  ? TPayload extends undefined
+    ? (opts: { wid: string }) => any
+    : (opts: { wid: string; payload: TPayload }) => any
+  : TPayload extends undefined
     ? (opts: { wid: string; context: TContext }) => any
-    : (opts: { wid: string; context: TContext; payload: TPayload }) => any;
+    : (opts: { wid: string; payload: TPayload; context: TContext }) => any;
 
 export type ReceiverMessage<TContext, TPayload> = {
   _tag: "receiver";
   middlewares: AnyMiddlewareFn[];
-  payloadSchema: z.Schema<TPayload> | null;
+  payloadSchema?: z.Schema<TPayload>;
   handler: ReceiverMessageHandlerFn<TContext, TPayload>;
 };
 

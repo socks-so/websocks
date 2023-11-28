@@ -18,22 +18,19 @@ describe("server types", () => {
     };
 
     const s = init({
-      connect: () => {
-        const db = fakeDB.connect();
-        const user = null;
-        return {
-          db,
-          user,
-        };
-      },
       adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
+      header: z.object({ token: z.string().optional() }),
+      connect: ({ token }) => {
+        return token === "admin"
+          ? { user: null, db: fakeDB.connect(), isAdmin: true }
+          : { user: null, db: fakeDB.connect(), isAdmin: false };
+      },
     });
 
     //since there is no header this is snippet makes no sense
-    const authReceiver = s.receiver.use((opts) => {
-      const user = opts.context.db.select("no header");
-      return { ...opts.context, user };
-    });
+    const authReceiver = s.receiver.use(() => ({
+      user: { username: "Rahul" } as const,
+    }));
 
     const sends = s.sender.messages({
       greet: s.sender
@@ -48,8 +45,7 @@ describe("server types", () => {
       hello: s.receiver
         .message()
         .payload(z.object({ name: z.string() }))
-        .on(({ payload, context }) => {
-          context.db.insert(payload.name);
+        .on(({ payload }) => {
           console.log(payload.name);
           sends
             .greet({ greetingMessage: `greetings ${payload.name}` })
@@ -57,7 +53,6 @@ describe("server types", () => {
         }),
 
       helloUser: authReceiver.message().on(({ context }) => {
-        context.db.insert(context.user.username);
         console.log(context.user.username);
         sends
           .greet({ greetingMessage: `greetings ${context.user.username}` })
@@ -68,7 +63,7 @@ describe("server types", () => {
         greet: s.receiver
           .message()
           .payload(z.object({ msg: z.string() }))
-          .on(({ payload, context }) => {
+          .on(({ payload }) => {
             sends.deep.greet({ msg: payload.msg }).to("test");
           }),
       },
