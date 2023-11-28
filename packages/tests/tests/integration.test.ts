@@ -9,17 +9,9 @@ import { z } from "zod";
 import { WebSocketServer } from "ws";
 
 describe("integration test", () => {
-  // const consoleMock = vi
-  //   .spyOn(console, "log")
-  //   .mockImplementation(() => undefined);
-
-  // afterAll(() => {
-  //   consoleMock.mockReset();
-  // });
-
   test("should integrate", async (ctx) => {
     const s = init({
-      context: () => "test",
+      connect: () => "test",
       adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
     });
 
@@ -27,15 +19,6 @@ describe("integration test", () => {
       console.log("better receiver:");
       return ctx;
     });
-
-    class Point {
-      constructor() {
-        this.x = 0;
-        this.y = 0;
-      }
-      x: number;
-      y: number;
-    }
 
     const sender = s.sender.messages({
       test: s.sender.message().payload(z.string()),
@@ -81,10 +64,8 @@ describe("integration test", () => {
     const cli1 = createClient<Schema>("ws://localhost:8080");
     const cli2 = createClient<Schema>("ws://localhost:8080");
 
-    cli1.on.test2(({ payload }) => {});
-
-    cli1.on.test(({ payload }) => {
-      console.log("[CLIENT 1]: received test message, payload:" + payload);
+    cli1.on.test2((payload) => {
+      console.log("[CLIENT 1]: received test2 message, payload:", payload);
     });
 
     await new Promise((resovle) =>
