@@ -21,30 +21,25 @@ describe("integration test", () => {
     });
 
     const sender = s.sender.messages({
-      test: s.sender.message().payload(z.string()),
-      test2: s.sender
-        .message()
-        .payload(z.object({ x: z.number(), y: z.number() })),
+      test: s.sender.message.payload(z.string()),
+      test2: s.sender.message.payload(
+        z.object({ x: z.number(), y: z.number() })
+      ),
     });
 
     const receiver = s.receiver.messages({
-      test: s.receiver
-        .message()
-        .payload(z.string())
-        .on(({ payload }) => {
-          console.log("[SERVER]: received test message, payload:" + payload);
-          sender.test2({ x: 2, y: 3 }).toRoom("test");
-        }),
-      betterTest: betterReceiver
-        .message()
+      test: s.receiver.message.payload(z.string()).on(({ payload }) => {
+        console.log("[SERVER]: received test message, payload:" + payload);
+        sender.test2({ x: 2, y: 3 }).toRoom("test");
+      }),
+      betterTest: betterReceiver.message
         .payload(z.string())
         .on(({ payload }) => {
           console.log(
             "[SERVER]: received betterTest message, payload:" + payload
           );
         }),
-      joinRoom: s.receiver
-        .message()
+      joinRoom: s.receiver.message
         .payload(z.object({ rid: z.string() }))
         .on(({ wid, payload }) => {
           console.log(

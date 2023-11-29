@@ -14,16 +14,13 @@ describe("client", () => {
     });
 
     const receiver = s.receiver.messages({
-      test: s.receiver
-        .message()
-        .payload(z.string())
-        .on(() => {
-          console.log("test2");
-        }),
+      test: s.receiver.message.payload(z.string()).on(() => {
+        console.log("test2");
+      }),
     });
 
     const sender = s.sender.messages({
-      test: s.sender.message().payload(z.string()),
+      test: s.sender.message.payload(z.string()),
     });
 
     const server = s.create({

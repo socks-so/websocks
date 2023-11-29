@@ -22,38 +22,70 @@ import {
   Merge,
 } from "./types";
 
-const createReceiverFactory = <THeader, TContext>(
-  middlewares: AnyMiddlewareFn[] = []
-) => ({
-  messages: <TMessages extends SchemaReceiverMessageRecord>(
-    messages: TMessages
-  ) => messages as any as InferReceiverMessageRecord<TMessages>,
-  message: () => ({
-    on: (handler: ReceiverMessageHandlerFn<TContext, null>) =>
-      ({
-        _tag: "receiver",
-        middlewares,
-        payloadSchema: null,
-        handler,
-      }) as any as SchemaReceiverMessage<TContext, null>,
+// const createReceiverFactory = <THeader, TContext>(
+//   middlewares: AnyMiddlewareFn[] = []
+// ) => ({
+//   messages: <TMessages extends SchemaReceiverMessageRecord>(
+//     messages: TMessages
+//   ) => messages as any as InferReceiverMessageRecord<TMessages>,
+//   message: {
+//     payload: <TPayload>(payloadSchema: z.Schema<TPayload>) => ({
+//       on: (handler: ReceiverMessageHandlerFn<TContext, TPayload>) =>
+//         ({
+//           _tag: "receiver",
+//           middlewares,
+//           payloadSchema,
+//           handler,
+//         }) as SchemaReceiverMessage<TContext, TPayload>,
+//     }),
+//     on: (handler: ReceiverMessageHandlerFn<TContext, null>) =>
+//       ({
+//         _tag: "receiver",
+//         middlewares,
+//         handler,
+//       }) as SchemaReceiverMessage<TContext, null>,
+//   },
+//   use: <TMiddlewareFn extends MiddlewareFn<TContext>>(
+//     middleware: TMiddlewareFn
+//   ) =>
+//     createReceiverFactory<
+//       THeader,
+//       Prettify<Merge<TContext, ReturnType<TMiddlewareFn>>>
+//     >([...middlewares, middleware]),
+// });
+
+class Receiver<THeader, TContext> {
+  constructor(private middlewares: AnyMiddlewareFn[] = []) {}
+
+  messages<TMessages extends SchemaReceiverMessageRecord>(messages: TMessages) {
+    return messages as any as InferReceiverMessageRecord<TMessages>;
+  }
+
+  message = {
     payload: <TPayload>(payloadSchema: z.Schema<TPayload>) => ({
       on: (handler: ReceiverMessageHandlerFn<TContext, TPayload>) =>
         ({
           _tag: "receiver",
-          middlewares,
+          middlewares: this.middlewares,
           payloadSchema,
           handler,
         }) as SchemaReceiverMessage<TContext, TPayload>,
     }),
-  }),
-  use: <TMiddlewareFn extends MiddlewareFn<TContext>>(
-    middleware: TMiddlewareFn
-  ) =>
-    createReceiverFactory<
+    on: (handler: ReceiverMessageHandlerFn<TContext, null>) =>
+      ({
+        _tag: "receiver",
+        middlewares: this.middlewares,
+        handler,
+      }) as SchemaReceiverMessage<TContext, null>,
+  };
+
+  use<TMiddlewareFn extends MiddlewareFn<TContext>>(middleware: TMiddlewareFn) {
+    return new Receiver<
       THeader,
       Prettify<Merge<TContext, ReturnType<TMiddlewareFn>>>
-    >([...middlewares, middleware]),
-});
+    >([...this.middlewares, middleware]);
+  }
+}
 
 export const createSenderFactory = <THeader, TAdapter extends Adapter>(
   adapter: TAdapter
@@ -80,12 +112,12 @@ export const createSenderFactory = <THeader, TAdapter extends Adapter>(
       };
     }, []) as any as InferSenderMessageRecord<TMessages>;
   },
-  message: () => ({
+  message: {
     payload: <TPayload>(payloadSchema: z.Schema<TPayload>) =>
       ({
         _tag: "sender",
       }) as SchemaSenderMessage<TPayload>,
-  }),
+  },
 });
 
 function createMessageMap(
@@ -116,7 +148,7 @@ export function init<THeader, TContext, TAdapter extends Adapter>(
       join: config.adapter.join,
       leave: config.adapter.leave,
     },
-    receiver: createReceiverFactory<THeader, TContext>([]),
+    receiver: new Receiver<THeader, TContext>([]),
     sender: createSenderFactory<THeader, TAdapter>(config.adapter),
     create: <
       TReceiverMessages extends ReceiverMessageRecord,

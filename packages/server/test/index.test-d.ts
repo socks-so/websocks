@@ -33,17 +33,16 @@ describe("server types", () => {
     }));
 
     const sends = s.sender.messages({
-      greet: s.sender
-        .message()
-        .payload(z.object({ greetingMessage: z.string() })),
+      greet: s.sender.message.payload(
+        z.object({ greetingMessage: z.string() })
+      ),
       deep: {
-        greet: s.sender.message().payload(z.object({ msg: z.string() })),
+        greet: s.sender.message.payload(z.object({ msg: z.string() })),
       },
     });
 
     const receives = s.receiver.messages({
-      hello: s.receiver
-        .message()
+      hello: s.receiver.message
         .payload(z.object({ name: z.string() }))
         .on(({ payload }) => {
           console.log(payload.name);
@@ -52,7 +51,7 @@ describe("server types", () => {
             .to(payload.name);
         }),
 
-      helloUser: authReceiver.message().on(({ context }) => {
+      helloUser: authReceiver.message.on(({ context }) => {
         console.log(context.user.username);
         sends
           .greet({ greetingMessage: `greetings ${context.user.username}` })
@@ -60,8 +59,7 @@ describe("server types", () => {
       }),
 
       deep: {
-        greet: s.receiver
-          .message()
+        greet: s.receiver.message
           .payload(z.object({ msg: z.string() }))
           .on(({ payload }) => {
             sends.deep.greet({ msg: payload.msg }).to("test");
