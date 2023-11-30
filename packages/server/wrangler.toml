@@ -1,0 +1,11 @@
+name = "test"
+main = "test/cf.ts"
+compatibility_date = "2023-11-29"
+
+[[durable_objects.bindings]]
+name = "WSService"
+class_name = "WSService"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["WSService"]
