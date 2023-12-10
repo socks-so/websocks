@@ -1,7 +1,8 @@
 import { Adapter } from "../types";
 
-import { handleMessage } from "../../message-handler";
+import { handleMessage, handleConnect } from "../../message-handler";
 import { Message } from "../../message";
+import { SocksServer } from "./server";
 
 export interface Env {
   WSService: DurableObjectNamespace;
@@ -15,63 +16,12 @@ export function createSocksAdapter(opts: { token: string }) {
     return service.fetch(request);
   }
 
-  const createService = () => {
-    const clientToWid = new Map<WebSocket, string>();
-    const widToClient = new Map<string, WebSocket>();
-
-    const rooms = new Map<string, Set<string>>();
-    const widInRooms = new Map<string, Set<string>>();
-
-    return {
-      connect(server: WebSocket) {
-        const wid = crypto.randomUUID();
-        clientToWid.set(server, wid);
-        widToClient.set(wid, server);
-        widInRooms.set(wid, new Set());
-        return wid;
-      },
-
-      async to(wid, data) {
-        widToClient.get(wid)?.send(JSON.stringify(data));
-      },
-
-      async toRoom(rid, data) {
-        for (const wid of rooms.get(rid) || []) {
-          widToClient.get(wid)?.send(JSON.stringify(data));
-        }
-      },
-
-      async broadcast(data) {
-        for (const ws of clientToWid.keys()) {
-          ws.send(JSON.stringify(data));
-        }
-      },
-
-      async join(wid, rid) {
-        if (!rooms.has(rid)) {
-          rooms.set(rid, new Set());
-        }
-        rooms.get(rid)?.add(wid);
-
-        if (!widInRooms.has(wid)) {
-          widInRooms.set(wid, new Set());
-        }
-        widInRooms.get(wid)?.add(rid);
-      },
-
-      async leave(wid, rid) {
-        rooms.get(rid)?.delete(wid);
-        widInRooms.get(wid)?.delete(rid);
-      },
-    };
-  };
-
-  const service = createService();
+  const server = new SocksServer();
 
   return {
-    ...service,
-
-    create(messageMap) {
+    ...server.toAdapter(),
+    create(config, messages) {
+      //durable object
       class WSService {
         constructor(private state: DurableObjectState, private env: Env) {}
 
@@ -83,41 +33,16 @@ export function createSocksAdapter(opts: { token: string }) {
           }
 
           let pair = new WebSocketPair();
-          let client = pair[0];
-          let server = pair[1];
+          let remote = pair[0];
+          let ws = pair[1];
 
-          server.accept();
+          ws.accept();
 
-          const wid = service.connect(server);
-
-          server.addEventListener("message", (event) => {
-            try {
-              const parsedData = parseRawData(event.data);
-              const message = messageMap.get(parsedData.type);
-
-              if (!message) {
-                return server.send(
-                  JSON.stringify({
-                    type: "error",
-                    payload: "message not found",
-                  })
-                );
-              }
-
-              handleMessage(message, parsedData, wid);
-            } catch (err) {
-              if (err instanceof Error) {
-                console.log(err);
-                server.send(
-                  JSON.stringify({ type: "error", payload: err.message })
-                );
-              }
-            }
-          });
+          server.connect(ws, config, messages);
 
           return new Response(null, {
             status: 101,
-            webSocket: client,
+            webSocket: remote,
           });
         }
       }

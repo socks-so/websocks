@@ -39,6 +39,7 @@
     "ws": "^8.14.2"
   },
   "dependencies": {
+    "isomorphic-ws": "^5.0.0",
     "zod": "^3.22.4"
   }
 }

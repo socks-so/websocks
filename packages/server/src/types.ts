@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { Adapter } from "./adapters/types";
+
 // temporarily for TPayload but not used yet
 type JsonPrimitive = string | number | boolean | null;
 
@@ -10,31 +13,24 @@ type JsonArray = Array<JsonPrimitive | JsonMap | JsonArray>;
 export type JsonSerializable = JsonPrimitive | JsonMap | JsonArray;
 //
 
-import { z } from "zod";
-import { Adapter } from "./adapters/types";
-
 export type AnyHeader = any;
 export type AnyContext = any;
 export type AnyPayload = any;
 
-export type AnyAdapter = Adapter;
-
 export type TConfig<
   THeader extends AnyHeader,
   TContext extends AnyContext,
-  TAdapter extends Adapter,
+  TAdapter extends Adapter
 > = {
   header?: z.Schema<THeader>;
   connect?: ConnectFn<THeader, TContext>;
   adapter: TAdapter;
 };
 
-export type AnyConfig = TConfig<AnyHeader, AnyContext, AnyAdapter>;
+export type AnyConfig = TConfig<AnyHeader, AnyContext, Adapter>;
 
 //experimental use of checking if THeader is unknown, not used anywhere else yet
-export type ConnectFn<THeader, TContext> = unknown extends THeader
-  ? () => TContext
-  : (header: THeader) => TContext;
+export type ConnectFn<THeader, TContext> = (header: THeader) => TContext;
 
 export type SchemaReceiverMessageRecord = {
   [key: string]:
@@ -48,8 +44,8 @@ export type InferSchemaReceiverMessageRecord<T> =
         [K in keyof T]: T[K] extends ReceiverMessage<AnyContext, AnyPayload>
           ? InferSchemaReceiverMessage<T[K]>
           : T[K] extends ReceiverMessageRecord
-            ? InferSchemaReceiverMessageRecord<T[K]>
-            : never;
+          ? InferSchemaReceiverMessageRecord<T[K]>
+          : never;
       }
     : never;
 
@@ -62,8 +58,8 @@ export type InferReceiverMessageRecord<T> =
         >
           ? InferReceiverMessage<T[K]>
           : T[K] extends SchemaReceiverMessageRecord
-            ? InferReceiverMessageRecord<T[K]>
-            : never;
+          ? InferReceiverMessageRecord<T[K]>
+          : never;
       }
     : never;
 
@@ -82,8 +78,8 @@ export type InferSchemaSenderMessageRecord<T> = T extends SenderMessageRecord
       [K in keyof T]: T[K] extends SenderMessage<AnyPayload>
         ? InferSchemaSenderMessage<T[K]>
         : T[K] extends SenderMessageRecord
-          ? InferSchemaSenderMessageRecord<T[K]>
-          : never;
+        ? InferSchemaSenderMessageRecord<T[K]>
+        : never;
     }
   : never;
 
@@ -94,8 +90,8 @@ export type InferSenderMessageRecord<T> = T extends SchemaSenderMessageRecord<
       [K in keyof T]: T[K] extends SchemaSenderMessage<AnyPayload>
         ? InferSenderMessage<T[K]>
         : T[K] extends SchemaSenderMessageRecord<THeader>
-          ? InferSenderMessageRecord<T[K]>
-          : never;
+        ? InferSenderMessageRecord<T[K]>
+        : never;
     }
   : never;
 
@@ -164,8 +160,8 @@ export type ReceiverMessageHandlerFn<TContext, TPayload> = TContext extends void
     ? (opts: { wid: string }) => any
     : (opts: { wid: string; payload: TPayload }) => any
   : TPayload extends undefined
-    ? (opts: { wid: string; context: TContext }) => any
-    : (opts: { wid: string; payload: TPayload; context: TContext }) => any;
+  ? (opts: { wid: string; context: TContext }) => any
+  : (opts: { wid: string; payload: TPayload; context: TContext }) => any;
 
 export type ReceiverMessage<TContext, TPayload> = {
   _tag: "receiver";
@@ -179,7 +175,7 @@ export type AnyReceiverMessage = ReceiverMessage<AnyContext, AnyPayload>;
 export type Schema<
   TReceiverMessages extends ReceiverMessageRecord,
   TSenderMessgages extends SenderMessageRecord,
-  THeader extends AnyHeader,
+  THeader extends AnyHeader
 > = {
   receiverMessages: TReceiverMessages;
   senderMessages: TSenderMessgages;

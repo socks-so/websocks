@@ -101,13 +101,13 @@ export const createSenderFactory = <THeader, TAdapter extends Adapter>(
       return {
         _tag: "sender",
         to: async (wid: string) => {
-          await adapter.to(wid, { type: pathString, payload });
+          adapter.to(wid, { type: pathString, payload });
         },
         toRoom: async (rid: string) => {
-          await adapter.toRoom(rid, { type: pathString, payload });
+          adapter.toRoom(rid, { type: pathString, payload });
         },
         broadcast: async () => {
-          await adapter.broadcast({ type: pathString, payload });
+          adapter.broadcast({ type: pathString, payload });
         },
       };
     }, []) as any as InferSenderMessageRecord<TMessages>;
@@ -158,10 +158,9 @@ export function init<THeader, TContext, TAdapter extends Adapter>(
       senderMessages: TSenderMessages;
     }) => {
       const messageMap = createMessageMap(opts.receiverMessages);
-
       return {
         schema: {} as Schema<TReceiverMessages, TSenderMessages, THeader>,
-        ...(config.adapter.create(messageMap) as ReturnType<
+        ...(config.adapter.create(config, messageMap) as ReturnType<
           TAdapter["create"]
         >),
       };
