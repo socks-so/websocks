@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
   "pipeline": {
-    "test": {
+    "t": {
       "dependsOn": ["^b"]
     },
     "typecheck": {

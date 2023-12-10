@@ -1,6 +1,6 @@
 {
   "name": "@websocks/server",
-  "version": "0.2.19",
+  "version": "0.2.20",
   "main": "index.js",
   "module": "index.mjs",
   "types": "index.d.ts",
@@ -18,7 +18,7 @@
     "dev": "vitest",
     "typecheck": "tsc --noEmit",
     "b": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
-    "test": "vitest run",
+    "t": "vitest run",
     "release": "changesets publish ./dist"
   },
   "peerDependencies": {
