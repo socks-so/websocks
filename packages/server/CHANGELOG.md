@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.2.18
+
+### Patch Changes
+
+- connect api added
+
 ## 0.2.17
 
 ### Patch Changes
