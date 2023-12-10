@@ -1,5 +1,11 @@
 # @websocks/server
 
+## 0.2.19
+
+### Patch Changes
+
+- add cloudflare adapter
+
 ## 0.2.18
 
 ### Patch Changes
