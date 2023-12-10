@@ -7,7 +7,7 @@ export default defineConfig((options) => {
     entry: [
       "./src/index.ts",
       "./src/adapters/node/index.ts",
-      "./src/adapters/socks/index.ts",
+      "./src/adapters/cloudflare/index.ts",
     ],
     splitting: true,
     sourcemap: false,
