@@ -3,13 +3,13 @@
   "globalDependencies": ["**/.env.*local"],
   "pipeline": {
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^b"]
     },
     "typecheck": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^b"]
     },
-    "build": {
-      "dependsOn": ["^build"],
+    "b": {
+      "dependsOn": ["^b"],
       "outputs": ["dist/**"]
     },
     "lint": {},

@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "vitest",
     "typecheck": "tsc --noEmit",
-    "build": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
+    "b": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
     "test": "vitest run",
     "release": "changesets publish ./dist"
   },

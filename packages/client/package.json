@@ -14,7 +14,7 @@
   "scripts": {
     "dev": "vitest --browser.name=firefox --browser.headless=true",
     "typecheck": "tsc --noEmit",
-    "build": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
+    "b": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
     "test": "echo no testing of client!",
     "release": "changesets publish"
   },

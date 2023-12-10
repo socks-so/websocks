@@ -1,7 +1,8 @@
 {
+  "name": "websocks",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
+    "b": "turbo run b",
     "dev": "turbo run dev",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
@@ -14,10 +15,8 @@
     "turbo": "latest",
     "typescript": "^5.2.2"
   },
-  "name": "websocks",
-  "packageManager": "yarn@1.22.19",
+  "packageManager": "bun@1.0.5",
   "workspaces": [
-    "apps/*",
     "packages/*"
   ]
 }
