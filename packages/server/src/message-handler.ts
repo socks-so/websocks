@@ -33,7 +33,7 @@ export async function handleMessage(
 
 export function handleContext(message: AnyReceiverMessage, initContext: any) {
   return message.middlewares.reduce(
-    (acc, curr) => curr({ context: acc }),
+    (acc, curr) => ({ ...curr({ context: acc }), ...acc }),
     initContext
   );
 }
