@@ -81,17 +81,18 @@ export class SocksServer {
       async (event) => {
         try {
           const data = JSON.parse(event.data as string) as Message; //watch out for different environments
+          if (data.type !== "connect") {
+            throw new Error("connection could not be established");
+          }
+
           const wid = crypto.randomUUID();
           const context = await handleConnect(config, data);
           this.accept(new SocksSocket(wid, ws, context), messages);
-        } catch {
-          ws.send(
-            JSON.stringify({
-              type: "error",
-              payload: "connection could not be established",
-            })
-          );
-          ws.close();
+        } catch (error) {
+          if (error instanceof Error) {
+            ws.send(JSON.stringify({ type: "error", payload: error.message }));
+            ws.close();
+          }
         }
       },
       { once: true }
@@ -102,6 +103,7 @@ export class SocksServer {
     { wid, ws, context }: SocksSocket,
     messages: TMessageMap
   ) {
+    ws.send(JSON.stringify({ type: "accept", payload: { wid } }));
     ws.addEventListener("message", async (event) => {
       try {
         const data = JSON.parse(event.data as string) as Message; //watch out for different environments
