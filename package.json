@@ -7,7 +7,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "ci": "turbo run typecheck build test",
-    "pub": "turbo run build lint test && changeset publish"
+    "pub": "turbo run b lint test && changeset publish"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",
