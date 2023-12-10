@@ -24,11 +24,11 @@ export class SocksSocket {
   }
 
   static getInRoom(rid: string) {
-    return SocksSocket.inRooms.get(rid);
+    return [...(SocksSocket.inRooms.get(rid) || [])];
   }
 
   static getAll() {
-    return SocksSocket.clientToWid.keys();
+    return [...SocksSocket.clientToWid.keys()];
   }
 
   accept() {
@@ -52,18 +52,6 @@ export class SocksSocket {
 
   to(data: any) {
     this.ws.send(JSON.stringify(data));
-  }
-
-  toRoom(rid: string, data: any) {
-    for (const ws of SocksSocket.inRooms.get(rid) || []) {
-      ws.to(data);
-    }
-  }
-
-  broadcast(data: any) {
-    for (const ws of SocksSocket.clientToWid.keys()) {
-      ws.to(data);
-    }
   }
 }
 
@@ -100,9 +88,12 @@ export class SocksServer {
   }
 
   accept<TMessageMap extends Map<String, AnyReceiverMessage>>(
-    { wid, ws, context }: SocksSocket,
+    ss: SocksSocket,
     messages: TMessageMap
   ) {
+    ss.accept();
+    const { wid, ws, context } = ss;
+
     ws.send(JSON.stringify({ type: "accept", payload: { wid } }));
     ws.addEventListener("message", async (event) => {
       try {
@@ -136,13 +127,11 @@ export class SocksServer {
   }
 
   toRoom(rid: string, data: any) {
-    SocksSocket.getInRoom(rid)?.forEach((ws) => ws.to(data));
+    SocksSocket.getInRoom(rid).forEach((ws) => ws.to(data));
   }
 
   broadcast(data: any) {
-    for (const ws of SocksSocket.getAll()) {
-      ws.to(data);
-    }
+    SocksSocket.getAll().forEach((ws) => ws.to(data));
   }
 
   toAdapter(): Omit<Adapter, "create"> {
