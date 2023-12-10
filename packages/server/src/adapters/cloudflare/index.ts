@@ -1,6 +1,5 @@
 import { Adapter } from "../types";
 
-import { handleMessage, handleConnect } from "../../message-handler";
 import { Message } from "../../message";
 import { SocksServer } from "./server";
 
@@ -23,7 +22,10 @@ export function createSocksAdapter(opts: { token: string }) {
     create(config, messages) {
       //durable object
       class WSService {
-        constructor(private state: DurableObjectState, private env: Env) {}
+        constructor(
+          public state: DurableObjectState,
+          public env: Env
+        ) {}
 
         async fetch(request: Request) {
           if (request.headers.get("Upgrade") != "websocket") {

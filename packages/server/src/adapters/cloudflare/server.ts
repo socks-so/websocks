@@ -72,7 +72,7 @@ export class SocksServer {
 
   connect<
     TConfig extends AnyConfig,
-    TMessageMap extends Map<String, AnyReceiverMessage>,
+    TMessageMap extends Map<String, AnyReceiverMessage>
   >(ws: WebSocket, config: TConfig, messages: TMessageMap) {
     //TODO other events like close, error, quit, etc should be implemented
 
