@@ -65,6 +65,7 @@ export type DecorateSenderMessageRecord<TRecord> =
       } & {
         open: (handler: () => any) => void; //temporary for utility events
         close: (handler: () => any) => void;
+        accept: (handler: (opts: { wid: string }) => any) => void; //very temporary
       }
     : never;
 
