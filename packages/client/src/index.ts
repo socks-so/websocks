@@ -1,11 +1,12 @@
 import mitt from "mitt";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 import { createRecursiveProxy } from "./proxy";
 
 import { AnySchema, Client } from "./types";
 
 export const createRawClient = <TSocks extends AnySchema>(
-  socket: WebSocket
+  socket: ReconnectingWebSocket
 ) => {
   const emitter = mitt();
 
