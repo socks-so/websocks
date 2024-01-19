@@ -17,6 +17,7 @@ const receiverMessages = s.receiver.messages({
     .payload(z.string())
     .on(({ wid, payload }) => {
       console.log(`Hello from client ${wid}, he says: ${payload}`);
+      senderMessages.hello("get lost!").broadcast();
     }),
 });
 
