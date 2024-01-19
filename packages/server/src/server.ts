@@ -1,11 +1,12 @@
-//CODE DUPLICATION please fix!!!
-import WebSocket from "isomorphic-ws";
-import crypto from "crypto";
+import { Message } from "./message";
+import { handleConnect, handleMessage } from "./message-handler";
+import { AnyConfig, AnyReceiverMessage } from "./types";
+import { Adapter } from "./adapters/types";
 
-import { Message } from "../../message";
-import { handleConnect, handleMessage } from "../../message-handler";
-import { AnyConfig, AnyReceiverMessage } from "../../types";
-import { Adapter } from "../types";
+import { nanoid } from "nanoid";
+
+import WebSocket from "isomorphic-ws";
+import { crypto } from "@cloudflare/workers-types/experimental";
 
 export class SocksSocket {
   private static clientToWid = new Map<SocksSocket, string>();
@@ -24,11 +25,11 @@ export class SocksSocket {
   }
 
   static getInRoom(rid: string) {
-    return SocksSocket.inRooms.get(rid);
+    return [...(SocksSocket.inRooms.get(rid) || [])];
   }
 
   static getAll() {
-    return SocksSocket.clientToWid.keys();
+    return [...SocksSocket.clientToWid.keys()];
   }
 
   accept() {
@@ -53,26 +54,14 @@ export class SocksSocket {
   to(data: any) {
     this.ws.send(JSON.stringify(data));
   }
-
-  toRoom(rid: string, data: any) {
-    for (const ws of SocksSocket.inRooms.get(rid) || []) {
-      ws.to(data);
-    }
-  }
-
-  broadcast(data: any) {
-    for (const ws of SocksSocket.clientToWid.keys()) {
-      ws.to(data);
-    }
-  }
 }
 
 export class SocksServer {
-  constructor() {}
+  constructor(public randomUUID: () => string) {}
 
   connect<
     TConfig extends AnyConfig,
-    TMessageMap extends Map<String, AnyReceiverMessage>
+    TMessageMap extends Map<String, AnyReceiverMessage>,
   >(ws: WebSocket, config: TConfig, messages: TMessageMap) {
     //TODO other events like close, error, quit, etc should be implemented
 
@@ -85,7 +74,8 @@ export class SocksServer {
             throw new Error("connection could not be established");
           }
 
-          const wid = crypto.randomUUID();
+          const wid = nanoid();
+
           const context = await handleConnect(config, data);
           this.accept(new SocksSocket(wid, ws, context), messages);
         } catch (error) {
@@ -95,15 +85,21 @@ export class SocksServer {
           }
         }
       },
-      { once: true }
+      {
+        once: true,
+      }
     );
   }
 
   accept<TMessageMap extends Map<String, AnyReceiverMessage>>(
-    { wid, ws, context }: SocksSocket,
+    ss: SocksSocket,
     messages: TMessageMap
   ) {
+    ss.accept();
+    const { wid, ws, context } = ss;
+
     ws.send(JSON.stringify({ type: "accept", payload: { wid } }));
+
     ws.addEventListener("message", async (event) => {
       try {
         const data = JSON.parse(event.data as string) as Message; //watch out for different environments
@@ -136,13 +132,11 @@ export class SocksServer {
   }
 
   toRoom(rid: string, data: any) {
-    SocksSocket.getInRoom(rid)?.forEach((ws) => ws.to(data));
+    SocksSocket.getInRoom(rid).forEach((ws) => ws.to(data));
   }
 
   broadcast(data: any) {
-    for (const ws of SocksSocket.getAll()) {
-      ws.to(data);
-    }
+    SocksSocket.getAll().forEach((ws) => ws.to(data));
   }
 
   toAdapter(): Omit<Adapter, "create"> {

@@ -7,6 +7,5 @@
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "lib": ["esnext"],
-    "types": ["@cloudflare/workers-types"]
-  }
+  },
 }

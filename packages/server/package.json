@@ -16,6 +16,8 @@
   },
   "scripts": {
     "dev": "vitest",
+    "node": "ts-node ./test/node.server.ts --esm",
+    "cf": "wrangler dev",
     "typecheck": "tsc --noEmit",
     "b": "tsup && cp README.md ./dist/ && cp package.json ./dist/ && cp LICENSE ./dist/",
     "t": "vitest run",
@@ -35,11 +37,12 @@
     "tsup": "^7.2.0",
     "typescript": "^5.2.2",
     "vitest": "^0.34.4",
-    "wrangler": "^3.17.1",
+    "wrangler": "^3.23.0",
     "ws": "^8.14.2"
   },
   "dependencies": {
     "isomorphic-ws": "^5.0.0",
+    "nanoid": "^5.0.4",
     "zod": "^3.22.4"
   }
 }

@@ -1,7 +1,5 @@
 import { Adapter } from "../types";
-
-import { Message } from "../../message";
-import { SocksServer } from "./server";
+import { SocksServer } from "../../server";
 
 export interface Env {
   WSService: DurableObjectNamespace;
@@ -15,8 +13,7 @@ export function createSocksAdapter(opts: { token: string }) {
     return service.fetch(request);
   }
 
-  const server = new SocksServer();
-
+  const server = new SocksServer(crypto.randomUUID);
   return {
     ...server.toAdapter(),
     create(config, messages) {
@@ -40,6 +37,7 @@ export function createSocksAdapter(opts: { token: string }) {
 
           ws.accept();
 
+          // @ts-expect-error
           server.connect(ws, config, messages);
 
           return new Response(null, {
@@ -54,8 +52,4 @@ export function createSocksAdapter(opts: { token: string }) {
       };
     },
   } satisfies Adapter;
-}
-
-function parseRawData(data: any) {
-  return JSON.parse(data.toString()) as Message;
 }

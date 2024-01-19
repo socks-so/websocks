@@ -1,5 +1,12 @@
 {
   "name": "websocks",
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.2",
+    "prettier": "^3.1.0",
+    "turbo": "latest",
+    "typescript": "^5.2.2"
+  },
+  "packageManager": "bun@1.0.5",
   "private": true,
   "scripts": {
     "b": "turbo run b",
@@ -9,13 +16,6 @@
     "ci": "turbo run typecheck build test",
     "pub": "turbo run b lint t && changeset publish"
   },
-  "devDependencies": {
-    "@tsconfig/node18": "^18.2.2",
-    "prettier": "^3.1.0",
-    "turbo": "latest",
-    "typescript": "^5.2.2"
-  },
-  "packageManager": "bun@1.0.5",
   "workspaces": [
     "packages/*"
   ]

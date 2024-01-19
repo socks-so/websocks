@@ -1,6 +1,6 @@
 name = "test"
-main = "test/cf.ts"
-compatibility_date = "2023-11-29"
+main = "test/cloudflare.server.ts"
+compatibility_date = "2023-10-30"
 
 [[durable_objects.bindings]]
 name = "WSService"
