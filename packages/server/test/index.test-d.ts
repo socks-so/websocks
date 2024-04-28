@@ -21,9 +21,10 @@ describe("server types", () => {
       adapter: createNodeAdapter(new WebSocketServer({ port: 8080 })),
       header: z.object({ token: z.string().optional() }),
       connect: ({ token }) => {
+        const db = fakeDB.connect()
         return token === "admin"
-          ? { user: null, db: fakeDB.connect(), isAdmin: true }
-          : { user: null, db: fakeDB.connect(), isAdmin: false };
+          ? { user: null, db, isAdmin: true }
+          : { user: null, db, isAdmin: false };
       },
     });
 

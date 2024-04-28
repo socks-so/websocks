@@ -9,6 +9,7 @@ const s = init({
 });
 
 const senderMessages = s.sender.messages({
+  connect: s.sender.message.payload(z.string()),
   hello: s.sender.message.payload(z.string()),
 });
 
